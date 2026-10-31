@@ -1,0 +1,18 @@
+# Render Blueprint for Trinetra AI (semrag_project/app2.py).
+# GEMINI_API_KEY is not stored here: Render asks for it when you create the Blueprint.
+services:
+  - type: web
+    name: trinetra-ai
+    runtime: python
+    plan: free
+    rootDir: semrag_project
+    # Also downloads the embedding model into .model_cache/ so it ships with the build
+    buildCommand: pip install -r requirements-render.txt && python -c "from src.cloud.embedder import get_model; get_model()"
+    # One worker: chats and rate limits are kept in that worker's memory
+    startCommand: gunicorn app2:app --workers 1 --threads 8 --timeout 180 --bind 0.0.0.0:$PORT
+    healthCheckPath: /health
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.11.9
