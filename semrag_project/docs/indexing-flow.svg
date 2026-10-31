@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 250" width="1000" height="250" role="img" aria-label="Indexing data flow: PDF files to semantic chunks to entity graph to communities to in-memory domain index">
+
+<style>
+  .bg{fill:#ffffff;stroke:#d0d7de}
+  .box{fill:#f6f8fa;stroke:#d0d7de;stroke-width:1.2}
+  .pill{fill:#eef4ff;stroke:#9ec5fe;stroke-width:1.2;stroke-dasharray:4 3}
+  .t{fill:#1f2328;font:600 14px system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}
+  .m{fill:#57606a;font:11.5px system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}
+  .h{fill:#1f2328;font:600 15px system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}
+  .c{font:11px ui-monospace,SFMono-Regular,Consolas,'Liberation Mono',monospace}
+  .edge{fill:none;stroke:#8c959f;stroke-width:1.6}
+  .dash{fill:none;stroke:#8c959f;stroke-width:1.2;stroke-dasharray:4 3}
+  .head{fill:#8c959f}
+  .blue{fill:#0969da} .green{fill:#1a7f37} .purple{fill:#8250df} .orange{fill:#bc4c00}
+  .gblue{stroke:#0969da} .ggreen{stroke:#1a7f37} .gpurple{stroke:#8250df} .gorange{stroke:#bc4c00}
+  @media (prefers-color-scheme: dark){
+    .bg{fill:#0d1117;stroke:#30363d}
+    .box{fill:#161b22;stroke:#30363d}
+    .pill{fill:#121d2f;stroke:#1f6feb}
+    .t,.h{fill:#e6edf3} .m{fill:#8b949e}
+    .edge,.dash{stroke:#6e7681} .head{fill:#6e7681}
+    .blue{fill:#4493f8} .green{fill:#3fb950} .purple{fill:#a371f7} .orange{fill:#f0883e}
+    .gblue{stroke:#4493f8} .ggreen{stroke:#3fb950} .gpurple{stroke:#a371f7} .gorange{stroke:#f0883e}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path class="head" d="M0,0 L10,5 L0,10 z"/>
+  </marker>
+</defs>
+
+<rect class="bg" x="0.5" y="0.5" width="999" height="249" rx="14"/>
+<text class="h" x="20" y="34">1 · Indexing: once at startup, for each domain</text>
+<text class="m" x="20" y="54">legal → IPC_docs · medical → medical_docs · disaster → disaster_docs · all → every PDF in data/</text>
+<path class="edge" d="M180,126.0 L218,126.0" marker-end="url(#arrow)"/>
+<path class="edge" d="M380,126.0 L418,126.0" marker-end="url(#arrow)"/>
+<path class="edge" d="M580,126.0 L618,126.0" marker-end="url(#arrow)"/>
+<path class="edge" d="M780,126.0 L818,126.0" marker-end="url(#arrow)"/>
+<rect class="box" x="20" y="70" width="160" height="112" rx="10"/>
+<rect x="18" y="68" width="164" height="116" rx="12" fill="none" class="gblue" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="6.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.0020;0.0030;0.1077;0.1087;1.0000" values="0;0;1;1;0;0"/></rect>
+<text class="t" x="100.0" y="92" text-anchor="middle">PDF files</text>
+<text class="m" x="100.0" y="111" text-anchor="middle">data/&lt;domain&gt;/*.pdf</text>
+<text class="m" x="100.0" y="126" text-anchor="middle">read page by page</text>
+<text class="m" x="100.0" y="141" text-anchor="middle">into raw text</text>
+<text class="c blue" x="100.0" y="171" text-anchor="middle">load_pdf()</text>
+<rect class="box" x="220" y="70" width="160" height="112" rx="10"/>
+<rect x="218" y="68" width="164" height="116" rx="12" fill="none" class="gblue" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="6.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.2000;0.2010;0.3154;0.3164;1.0000" values="0;0;1;1;0;0"/></rect>
+<text class="t" x="300.0" y="92" text-anchor="middle">Semantic chunks</text>
+<text class="m" x="300.0" y="111" text-anchor="middle">MiniLM embeddings;</text>
+<text class="m" x="300.0" y="126" text-anchor="middle">split where similarity</text>
+<text class="m" x="300.0" y="141" text-anchor="middle">drops below 0.75</text>
+<text class="c blue" x="300.0" y="171" text-anchor="middle">semantic_chunk()</text>
+<rect class="box" x="420" y="70" width="160" height="112" rx="10"/>
+<rect x="418" y="68" width="164" height="116" rx="12" fill="none" class="gblue" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="6.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.4077;0.4087;0.5231;0.5241;1.0000" values="0;0;1;1;0;0"/></rect>
+<text class="t" x="500.0" y="92" text-anchor="middle">Entity graph</text>
+<text class="m" x="500.0" y="111" text-anchor="middle">spaCy NER per chunk;</text>
+<text class="m" x="500.0" y="126" text-anchor="middle">entities become nodes,</text>
+<text class="m" x="500.0" y="141" text-anchor="middle">edges carry chunk text</text>
+<text class="c blue" x="500.0" y="171" text-anchor="middle">build_graph()</text>
+<rect class="box" x="620" y="70" width="160" height="112" rx="10"/>
+<rect x="618" y="68" width="164" height="116" rx="12" fill="none" class="gblue" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="6.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.6154;0.6164;0.7308;0.7318;1.0000" values="0;0;1;1;0;0"/></rect>
+<text class="t" x="700.0" y="92" text-anchor="middle">Communities</text>
+<text class="m" x="700.0" y="111" text-anchor="middle">Louvain clustering</text>
+<text class="m" x="700.0" y="126" text-anchor="middle">groups entities that</text>
+<text class="m" x="700.0" y="141" text-anchor="middle">appear together</text>
+<text class="c blue" x="700.0" y="171" text-anchor="middle">detect_communities()</text>
+<rect class="box" x="820" y="70" width="160" height="112" rx="10"/>
+<rect x="818" y="68" width="164" height="116" rx="12" fill="none" class="gblue" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="6.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.8231;0.8241;0.9538;0.9548;1.0000" values="0;0;1;1;0;0"/></rect>
+<text class="t" x="900.0" y="92" text-anchor="middle">Domain index</text>
+<text class="m" x="900.0" y="111" text-anchor="middle">held in memory:</text>
+<text class="m" x="900.0" y="126" text-anchor="middle">chunks + graph +</text>
+<text class="m" x="900.0" y="141" text-anchor="middle">communities</text>
+<text class="c blue" x="900.0" y="171" text-anchor="middle">system_states[d]</text>
+<circle r="5" class="blue" opacity="0"><animateMotion dur="6.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.0769;0.2000;1" path="M180,126.0 L220,126.0"/><animate attributeName="opacity" dur="6.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.0769;0.0779;0.2000;0.2010;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="5" class="blue" opacity="0"><animateMotion dur="6.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2846;0.4077;1" path="M380,126.0 L420,126.0"/><animate attributeName="opacity" dur="6.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.2846;0.2856;0.4077;0.4087;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="5" class="blue" opacity="0"><animateMotion dur="6.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.4923;0.6154;1" path="M580,126.0 L620,126.0"/><animate attributeName="opacity" dur="6.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.4923;0.4933;0.6154;0.6164;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="5" class="blue" opacity="0"><animateMotion dur="6.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.7000;0.8231;1" path="M780,126.0 L820,126.0"/><animate attributeName="opacity" dur="6.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.7000;0.7010;0.8231;0.8241;1.0000" values="0;0;1;1;0;0"/></circle>
+<text class="m" x="20" y="225">The All-in-One index reuses the chunks already made for the other domains, so each PDF is only chunked once.</text>
+</svg>

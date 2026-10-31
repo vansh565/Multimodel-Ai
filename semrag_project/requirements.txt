@@ -1,0 +1,19 @@
+flask
+flask-cors
+pypdf
+networkx
+numpy
+pandas
+scikit-learn
+sentence-transformers
+transformers
+torch
+requests
+gunicorn
+python-dotenv
+flask-limiter
+huggingface_hub>=1.5,<2
+spacy
+python-louvain
+fastembed  # build_index.py / app2.py
+# after install run: python -m spacy download en_core_web_sm

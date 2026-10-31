@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 510" width="1020" height="510" role="img" aria-label="Question data flow: browser to Flask, local and global search over the domain index, prompt, Ollama, tokens streamed back to the browser and saved to chat history">
+
+<style>
+  .bg{fill:#ffffff;stroke:#d0d7de}
+  .box{fill:#f6f8fa;stroke:#d0d7de;stroke-width:1.2}
+  .pill{fill:#eef4ff;stroke:#9ec5fe;stroke-width:1.2;stroke-dasharray:4 3}
+  .t{fill:#1f2328;font:600 14px system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}
+  .m{fill:#57606a;font:11.5px system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}
+  .h{fill:#1f2328;font:600 15px system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}
+  .c{font:11px ui-monospace,SFMono-Regular,Consolas,'Liberation Mono',monospace}
+  .edge{fill:none;stroke:#8c959f;stroke-width:1.6}
+  .dash{fill:none;stroke:#8c959f;stroke-width:1.2;stroke-dasharray:4 3}
+  .head{fill:#8c959f}
+  .blue{fill:#0969da} .green{fill:#1a7f37} .purple{fill:#8250df} .orange{fill:#bc4c00}
+  .gblue{stroke:#0969da} .ggreen{stroke:#1a7f37} .gpurple{stroke:#8250df} .gorange{stroke:#bc4c00}
+  @media (prefers-color-scheme: dark){
+    .bg{fill:#0d1117;stroke:#30363d}
+    .box{fill:#161b22;stroke:#30363d}
+    .pill{fill:#121d2f;stroke:#1f6feb}
+    .t,.h{fill:#e6edf3} .m{fill:#8b949e}
+    .edge,.dash{stroke:#6e7681} .head{fill:#6e7681}
+    .blue{fill:#4493f8} .green{fill:#3fb950} .purple{fill:#a371f7} .orange{fill:#f0883e}
+    .gblue{stroke:#4493f8} .ggreen{stroke:#3fb950} .gpurple{stroke:#a371f7} .gorange{stroke:#f0883e}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path class="head" d="M0,0 L10,5 L0,10 z"/>
+  </marker>
+</defs>
+
+<rect class="bg" x="0.5" y="0.5" width="1019" height="509" rx="14"/>
+<text class="h" x="20" y="30">2 · Answering a question: every request</text>
+<path class="edge" d="M180,208.0 L213,208.0" marker-end="url(#arrow)"/>
+<path class="edge" d="M375,208.0 C410,208.0 395,98.0 428,98.0" marker-end="url(#arrow)"/>
+<path class="edge" d="M375,208.0 C410,208.0 395,318.0 428,318.0" marker-end="url(#arrow)"/>
+<path class="edge" d="M590,98.0 C625,98.0 610,208.0 643,208.0" marker-end="url(#arrow)"/>
+<path class="edge" d="M590,318.0 C625,318.0 610,208.0 643,208.0" marker-end="url(#arrow)"/>
+<path class="edge" d="M805,208.0 L838,208.0" marker-end="url(#arrow)"/>
+<path class="dash" d="M510.0,146 L510.0,182" marker-end="url(#arrow)"/>
+<path class="dash" d="M510.0,232 L510.0,268" marker-end="url(#arrow)"/>
+<path class="edge" d="M920.0,256 L920.0,410 L100.0,410 L100.0,258" marker-end="url(#arrow)"/>
+<path class="dash" d="M725.0,410 L725.0,438" marker-end="url(#arrow)"/>
+<path class="dash" d="M785.0,440 L785.0,258" marker-end="url(#arrow)"/>
+<text class="c purple" x="791.0" y="330">long-term</text>
+<text class="c purple" x="791.0" y="344">facts</text>
+<text class="c purple" x="510.0" y="401" text-anchor="middle">streamed back as Server-Sent Events:  data: {"token": "…"}  …  data: {"done": true}</text>
+<rect class="box" x="20" y="160" width="160" height="96" rx="10"/>
+<rect x="18" y="158" width="164" height="100" rx="12" fill="none" class="ggreen" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.0020;0.0030;0.0737;0.0747;0.6526;0.6536;0.8158;0.8168;1.0000" values="0;0;1;1;0;0;1;1;0;0"/></rect>
+<text class="t" x="100.0" y="182" text-anchor="middle">Browser</text>
+<text class="m" x="100.0" y="201" text-anchor="middle">templates/index.html</text>
+<text class="m" x="100.0" y="216" text-anchor="middle">domain + question</text>
+<text class="m" x="100.0" y="231" text-anchor="middle">+ session_id</text>
+<text class="c green" x="100.0" y="245" text-anchor="middle">POST /api/ask/stream</text>
+<rect class="box" x="215" y="160" width="160" height="96" rx="10"/>
+<rect x="213" y="158" width="164" height="100" rx="12" fill="none" class="ggreen" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.0947;0.0957;0.1684;0.1694;1.0000" values="0;0;1;1;0;0"/></rect>
+<text class="t" x="295.0" y="182" text-anchor="middle">Flask · app.py</text>
+<text class="m" x="295.0" y="201" text-anchor="middle">runs memory commands;</text>
+<text class="m" x="295.0" y="216" text-anchor="middle">adds last 6 messages</text>
+<text class="m" x="295.0" y="231" text-anchor="middle">(short-term memory)</text>
+<text class="c green" x="295.0" y="245" text-anchor="middle">ask_stream()</text>
+<rect class="box" x="430" y="50" width="160" height="96" rx="10"/>
+<rect x="428" y="48" width="164" height="100" rx="12" fill="none" class="ggreen" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.2053;0.2063;0.2789;0.2799;1.0000" values="0;0;1;1;0;0"/></rect>
+<text class="t" x="510.0" y="72" text-anchor="middle">Local search</text>
+<text class="m" x="510.0" y="91" text-anchor="middle">specific entities (IDF)</text>
+<text class="m" x="510.0" y="106" text-anchor="middle">+ direct chunk matches</text>
+<text class="m" x="510.0" y="121" text-anchor="middle">→ up to 6 passages</text>
+<text class="c green" x="510.0" y="135" text-anchor="middle">local_search()</text>
+<rect class="box" x="430" y="270" width="160" height="96" rx="10"/>
+<rect x="428" y="268" width="164" height="100" rx="12" fill="none" class="ggreen" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.2053;0.2063;0.2789;0.2799;1.0000" values="0;0;1;1;0;0"/></rect>
+<text class="t" x="510.0" y="292" text-anchor="middle">Global search</text>
+<text class="m" x="510.0" y="311" text-anchor="middle">question vs entity</text>
+<text class="m" x="510.0" y="326" text-anchor="middle">communities</text>
+<text class="m" x="510.0" y="341" text-anchor="middle">→ top 3 groups' names</text>
+<text class="c green" x="510.0" y="355" text-anchor="middle">global_search()</text>
+<rect class="pill" x="430" y="184" width="160" height="48" rx="10"/>
+<rect x="428" y="182" width="164" height="52" rx="12" fill="none" class="gblue" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.2053;0.2063;0.2789;0.2799;1.0000" values="0;0;1;1;0;0"/></rect>
+<text class="t" x="510.0" y="204" text-anchor="middle">Domain index</text>
+<text class="m" x="510.0" y="221" text-anchor="middle">from step 1</text>
+<rect class="box" x="645" y="160" width="160" height="96" rx="10"/>
+<rect x="643" y="158" width="164" height="100" rx="12" fill="none" class="ggreen" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.3211;0.3221;0.3895;0.3905;1.0000" values="0;0;1;1;0;0"/></rect>
+<text class="t" x="725.0" y="182" text-anchor="middle">Prompt</text>
+<text class="m" x="725.0" y="201" text-anchor="middle">identity + domain rules</text>
+<text class="m" x="725.0" y="216" text-anchor="middle">+ passages + entities</text>
+<text class="m" x="725.0" y="231" text-anchor="middle">+ memory + history</text>
+<text class="c green" x="725.0" y="245" text-anchor="middle">build_prompt()</text>
+<rect class="box" x="840" y="160" width="160" height="96" rx="10"/>
+<rect x="838" y="158" width="164" height="100" rx="12" fill="none" class="gorange" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.4053;0.4063;0.6632;0.6642;1.0000" values="0;0;1;1;0;0"/></rect>
+<text class="t" x="920.0" y="182" text-anchor="middle">Ollama · mistral</text>
+<text class="m" x="920.0" y="201" text-anchor="middle">local LLM on your PC</text>
+<text class="m" x="920.0" y="216" text-anchor="middle">localhost:11434</text>
+<text class="m" x="920.0" y="231" text-anchor="middle">generates token by token</text>
+<text class="c orange" x="920.0" y="245" text-anchor="middle">generate_stream()</text>
+<rect class="box" x="600" y="440" width="250" height="56" rx="10"/>
+<rect x="598" y="438" width="254" height="60" rx="12" fill="none" class="gpurple" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.2474;0.2484;0.3211;0.3221;0.8632;0.8642;0.9579;0.9589;1.0000" values="0;0;1;1;0;0;1;1;0;0"/></rect>
+<text class="t" x="725.0" y="462" text-anchor="middle">Memory · memory.db (SQLite)</text>
+<text class="m" x="725.0" y="481" text-anchor="middle">saved chats + remembered facts</text>
+<circle r="5" class="green" opacity="0"><animateMotion dur="9.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.0316;0.0947;1" path="M180,208.0 L213,208.0"/><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.0316;0.0326;0.0947;0.0957;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="5" class="green" opacity="0"><animateMotion dur="9.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.1316;0.2053;1" path="M375,208.0 C410,208.0 395,98.0 428,98.0"/><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.1316;0.1326;0.2053;0.2063;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="5" class="green" opacity="0"><animateMotion dur="9.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.1316;0.2053;1" path="M375,208.0 C410,208.0 395,318.0 428,318.0"/><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.1316;0.1326;0.2053;0.2063;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="5" class="green" opacity="0"><animateMotion dur="9.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2474;0.3211;1" path="M590,98.0 C625,98.0 610,208.0 643,208.0"/><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.2474;0.2484;0.3211;0.3221;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="5" class="green" opacity="0"><animateMotion dur="9.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2474;0.3211;1" path="M590,318.0 C625,318.0 610,208.0 643,208.0"/><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.2474;0.2484;0.3211;0.3221;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="5" class="green" opacity="0"><animateMotion dur="9.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.3526;0.4053;1" path="M805,208.0 L838,208.0"/><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.3526;0.3536;0.4053;0.4063;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="4" class="purple" opacity="0"><animateMotion dur="9.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.4526;0.6526;1" path="M920.0,256 L920.0,410 L100.0,410 L100.0,258"/><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.4526;0.4536;0.6526;0.6536;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="4" class="purple" opacity="0"><animateMotion dur="9.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.4842;0.6842;1" path="M920.0,256 L920.0,410 L100.0,410 L100.0,258"/><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.4842;0.4852;0.6842;0.6852;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="4" class="purple" opacity="0"><animateMotion dur="9.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5158;0.7158;1" path="M920.0,256 L920.0,410 L100.0,410 L100.0,258"/><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.5158;0.5168;0.7158;0.7168;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="4" class="purple" opacity="0"><animateMotion dur="9.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5474;0.7474;1" path="M920.0,256 L920.0,410 L100.0,410 L100.0,258"/><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.5474;0.5484;0.7474;0.7484;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="4" class="purple" opacity="0"><animateMotion dur="9.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5789;0.7789;1" path="M920.0,256 L920.0,410 L100.0,410 L100.0,258"/><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.5789;0.5799;0.7789;0.7799;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="4" class="purple" opacity="0"><animateMotion dur="9.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6105;0.8105;1" path="M920.0,256 L920.0,410 L100.0,410 L100.0,258"/><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.6105;0.6115;0.8105;0.8115;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="4" class="purple" opacity="0"><animateMotion dur="9.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.8158;0.8632;1" path="M725.0,410 L725.0,438"/><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.8158;0.8168;0.8632;0.8642;1.0000" values="0;0;1;1;0;0"/></circle>
+<circle r="4" class="purple" opacity="0"><animateMotion dur="9.5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2474;0.3211;1" path="M785.0,440 L785.0,258"/><animate attributeName="opacity" dur="9.5s" repeatCount="indefinite" calcMode="discrete" keyTimes="0.0000;0.2474;0.2484;0.3211;0.3221;1.0000" values="0;0;1;1;0;0"/></circle>
+</svg>

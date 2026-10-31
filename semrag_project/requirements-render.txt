@@ -1,0 +1,11 @@
+# Server-only dependencies for app2.py (Render). No torch / spaCy: retrieval uses the prebuilt
+# index_cache/ and all-MiniLM-L6-v2 via fastembed (ONNX). To rebuild the index locally, use requirements.txt.
+fastembed
+flask
+flask-cors
+flask-limiter
+gunicorn
+numpy
+requests
+python-dotenv
+pypdf

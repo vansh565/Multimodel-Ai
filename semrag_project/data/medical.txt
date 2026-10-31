@@ -1,0 +1,329 @@
+
+Disease: Leg Pain
+Symptoms: leg pain, swelling, difficulty walking
+Description: Pain in leg muscles or joints.
+Treatment: Rest, ice, pain relief.
+Doctor: Dr. Amit Sharma - Orthopedic Surgeon
+
+
+Disease: Knee Pain
+Symptoms: knee pain, stiffness, swelling
+Description: Joint pain in knee area.
+Treatment: Physiotherapy, rest.
+Doctor: Dr. Rahul Verma - Orthopedic
+
+
+Disease: Back Pain
+Symptoms: lower back pain, stiffness
+Description: Pain in spine or muscles.
+Treatment: Exercise, posture correction.
+Doctor: Dr. Karan Singh - Orthopedic
+
+
+Disease: Neck Pain
+Symptoms: neck stiffness, pain
+Description: Muscle strain in neck.
+Treatment: Stretching, rest.
+Doctor: Dr. Priya Nair - Orthopedic
+
+
+Disease: Migraine
+Symptoms: headache, nausea
+Description: Severe headache disorder.
+Treatment: Medication, rest.
+Doctor: Dr. Anjali Verma - Neurologist
+
+
+Disease: Fever
+Symptoms: high temperature, chills
+Description: Body temperature rise.
+Treatment: Paracetamol, rest.
+Doctor: Dr. Rakesh Singh - General Physician
+
+
+Disease: Cold
+Symptoms: runny nose, cough
+Description: Viral infection.
+Treatment: Rest, fluids.
+Doctor: Dr. Meena Kapoor - General Physician
+
+
+Disease: Cough
+Symptoms: dry cough, throat irritation
+Description: Respiratory irritation.
+Treatment: Syrup, steam.
+Doctor: Dr. Arjun Mehta - Pulmonologist
+
+
+Disease: Asthma
+Symptoms: breathing difficulty, wheezing
+Description: Chronic lung disease.
+Treatment: Inhalers.
+Doctor: Dr. Sameer Khan - Pulmonologist
+
+
+Disease: Diabetes
+Symptoms: high sugar, fatigue
+Description: Metabolic disorder.
+Treatment: Diet, insulin.
+Doctor: Dr. Sunita Rao - Endocrinologist
+
+
+Disease: Hypertension
+Symptoms: high BP, headache
+Description: High blood pressure.
+Treatment: Medication.
+Doctor: Dr. Rajiv Mehta - Cardiologist
+
+
+Disease: Heart Disease
+Symptoms: chest pain, breathlessness
+Description: Heart-related issues.
+Treatment: Lifestyle, meds.
+Doctor: Dr. Rajiv Mehta - Cardiologist
+
+
+Disease: Skin Allergy
+Symptoms: itching, rash
+Description: Allergic reaction.
+Treatment: Antihistamines.
+Doctor: Dr. Neha Gupta - Dermatologist
+
+
+Disease: Acne
+Symptoms: pimples, oily skin
+Description: Skin condition.
+Treatment: Creams.
+Doctor: Dr. Neha Gupta - Dermatologist
+
+
+Disease: Hair Fall
+Symptoms: hair loss, thin hair
+Description: Hair weakening.
+Treatment: Supplements.
+Doctor: Dr. Kavita Jain - Dermatologist
+
+
+Disease: Eye Infection
+Symptoms: red eyes, itching
+Description: Eye irritation.
+Treatment: Eye drops.
+Doctor: Dr. Suresh Iyer - Ophthalmologist
+
+
+Disease: Vision Problem
+Symptoms: blur vision
+Description: Eye issue.
+Treatment: Glasses.
+Doctor: Dr. Suresh Iyer - Ophthalmologist
+
+
+Disease: Ear Pain
+Symptoms: ear pain, hearing issue
+Description: Ear infection.
+Treatment: Drops.
+Doctor: Dr. Nikhil Sharma - ENT Specialist
+
+
+Disease: Sinus
+Symptoms: head pressure, blocked nose
+Description: Sinus infection.
+Treatment: Steam.
+Doctor: Dr. Nikhil Sharma - ENT Specialist
+
+
+Disease: Throat Infection
+Symptoms: sore throat
+Description: Infection.
+Treatment: Medication.
+Doctor: Dr. Nikhil Sharma - ENT Specialist
+
+
+Disease: Stomach Pain
+Symptoms: abdominal pain
+Description: Digestive issue.
+Treatment: Diet.
+Doctor: Dr. Alok Gupta - Gastroenterologist
+
+
+Disease: Acidity
+Symptoms: burning, gas
+Description: Acid reflux.
+Treatment: Antacids.
+Doctor: Dr. Alok Gupta - Gastroenterologist
+
+
+Disease: Constipation
+Symptoms: hard stool
+Description: Digestive issue.
+Treatment: Fiber.
+Doctor: Dr. Alok Gupta - Gastroenterologist
+
+
+Disease: Diarrhea
+Symptoms: loose motion
+Description: Infection.
+Treatment: ORS.
+Doctor: Dr. Alok Gupta - Gastroenterologist
+
+
+Disease: Kidney Stone
+Symptoms: pain, urine issue
+Description: Stone formation.
+Treatment: Surgery.
+Doctor: Dr. Vivek Sharma - Urologist
+
+
+Disease: UTI
+Symptoms: burning urination
+Description: Urinary infection.
+Treatment: Antibiotics.
+Doctor: Dr. Vivek Sharma - Urologist
+
+
+Disease: Depression
+Symptoms: sadness
+Description: Mental disorder.
+Treatment: Therapy.
+Doctor: Dr. Ritu Malhotra - Psychiatrist
+
+
+Disease: Anxiety
+Symptoms: fear, stress
+Description: Mental issue.
+Treatment: Therapy.
+Doctor: Dr. Ritu Malhotra - Psychiatrist
+
+
+Disease: Insomnia
+Symptoms: no sleep
+Description: Sleep disorder.
+Treatment: Routine.
+Doctor: Dr. Ritu Malhotra - Psychiatrist
+
+
+Disease: Thyroid
+Symptoms: weight change
+Description: Hormonal issue.
+Treatment: Medication.
+Doctor: Dr. Sunita Rao - Endocrinologist
+
+
+Disease: Obesity
+Symptoms: overweight
+Description: Weight issue.
+Treatment: Diet.
+Doctor: Dr. Sunita Rao - Endocrinologist
+
+
+Disease: Anemia
+Symptoms: weakness
+Description: Low hemoglobin.
+Treatment: Iron.
+Doctor: Dr. Pooja Sharma - Hematologist
+
+
+Disease: Allergy
+Symptoms: sneezing
+Description: Immune reaction.
+Treatment: Antihistamines.
+Doctor: Dr. Meena Kapoor - General Physician
+
+
+Disease: COVID-19
+Symptoms: fever, cough
+Description: Viral disease.
+Treatment: Isolation.
+Doctor: Dr. Arjun Mehta - Pulmonologist
+
+
+Disease: Flu
+Symptoms: fever, body ache
+Description: Viral infection.
+Treatment: Rest.
+Doctor: Dr. Meena Kapoor - General Physician
+
+
+Disease: Joint Pain
+Symptoms: joint stiffness
+Description: Inflammation.
+Treatment: Exercise.
+Doctor: Dr. Rahul Verma - Orthopedic
+
+
+Disease: Arthritis
+Symptoms: joint pain
+Description: Joint inflammation.
+Treatment: Medication.
+Doctor: Dr. Rahul Verma - Orthopedic
+
+
+Disease: Fracture
+Symptoms: bone break
+Description: Bone injury.
+Treatment: Cast.
+Doctor: Dr. Amit Sharma - Orthopedic Surgeon
+
+
+Disease: Burn Injury
+Symptoms: skin burn
+Description: Thermal injury.
+Treatment: Cream.
+Doctor: Dr. Neha Gupta - Dermatologist
+
+
+Disease: Food Poisoning
+Symptoms: vomiting
+Description: Contaminated food.
+Treatment: Fluids.
+Doctor: Dr. Alok Gupta - Gastroenterologist
+
+
+Disease: Vomiting
+Symptoms: nausea
+Description: Digestive issue.
+Treatment: Medication.
+Doctor: Dr. Alok Gupta - Gastroenterologist
+
+
+Disease: Dengue
+Symptoms: fever, rash
+Description: Mosquito disease.
+Treatment: Fluids.
+Doctor: Dr. Rakesh Singh - General Physician
+
+
+Disease: Malaria
+Symptoms: fever, chills
+Description: Parasite infection.
+Treatment: Medication.
+Doctor: Dr. Rakesh Singh - General Physician
+
+
+Disease: Typhoid
+Symptoms: fever, weakness
+Description: Bacterial infection.
+Treatment: Antibiotics.
+Doctor: Dr. Rakesh Singh - General Physician
+
+
+Disease: Pneumonia
+Symptoms: cough, fever
+Description: Lung infection.
+Treatment: Antibiotics.
+Doctor: Dr. Sameer Khan - Pulmonologist
+
+
+Disease: Bronchitis
+Symptoms: cough
+Description: Airway inflammation.
+Treatment: Medication.
+Doctor: Dr. Sameer Khan - Pulmonologist
+
+
+Disease: Stroke
+Symptoms: weakness
+Description: Brain issue.
+Treatment: Emergency care.
+Doctor: Dr. Anjali Verma - Neurologist
+
