@@ -3,6 +3,7 @@
 <html lang="en">
 
 <head>
+    <link rel="icon" href="data:,">
 
     <meta charset="UTF-8">
 
@@ -1517,7 +1518,7 @@ body {
 
 
 
-            if (window\.innerWidth <= 768) {
+            if (window.innerWidth <= 768) {
 
                 document.getElementById('sidebar').classList.remove('open');
 
@@ -1867,7 +1868,7 @@ body {
 
         function ragStep(icon, html, delayIndex) {
 
-            return `<li class="rag-step" style="animation-delay:${delayIndex \* 140}ms">
+            return `<li class="rag-step" style="animation-delay:${delayIndex * 140}ms">
 
                         <span class="icon">${icon}</span><span>${html}</span></li>`;
 
@@ -1937,7 +1938,7 @@ body {
 
                                       <b>${rag.history_messages}</b> recent message${rag.history_messages === 1 ? '' : 's'}`, steps.length));
 
-            steps.push(`<li class="rag-step generating" style="animation-delay:${steps.length \* 140}ms">
+            steps.push(`<li class="rag-step generating" style="animation-delay:${steps.length * 140}ms">
 
                             <span class="icon">✍️</span><span>Writing the answer from these passages...</span></li>`);
 
@@ -1949,7 +1950,7 @@ body {
 
                     <div class="src-head">#${i + 1} · ${escapeHtml(p.source)} ·
 
-                        ${p.via === 'graph' ? `graph link via “${escapeHtml(p.entity)}”` : `semantic match ${Math.round(p.score \* 100)}%`}</div>
+                        ${p.via === 'graph' ? `graph link via “${escapeHtml(p.entity)}”` : `semantic match ${Math.round(p.score * 100)}%`}</div>
 
                     ${escapeHtml(p.preview)}…
 
