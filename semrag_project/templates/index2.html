@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Trinetra AI | Multi-Domain RAG Intelligence Platform (Cloud)</title>
+    <title>Trinetra AI | Multi-Domain RAG Intelligence Platform</title>
     <style>
         :root {
             --bg-primary: #0a0a0a;
@@ -355,12 +355,7 @@
 
     <script>
         // Configuration
-        // Cloud backend (app2.py on Render). When this page is served by that server itself, or by a
-        // local app2.py (localhost), it talks to its own origin; opened as a file or hosted anywhere
-        // else (GitHub Pages, Netlify, ...), it calls the Render deployment.
-        const RENDER_API = 'https://multimodel-ai-9wyd.onrender.com';
-        const isOwnServer = location.origin === RENDER_API || ['localhost', '127.0.0.1'].includes(location.hostname);
-        const API_BASE = isOwnServer ? '' : RENDER_API;
+        const API_BASE = '';  // same origin: the local Flask server (app.py)
         
         // State
         let currentSystem = null;
@@ -721,16 +716,12 @@
                 }
                 document.getElementById('apiStatus').textContent = `LLM: ${data.llm_model}`;
             } catch {
-                // Free Render instances sleep after 15 idle minutes; the first request wakes them up
-                dot.style.background = '#ed8936';
-                text.textContent = 'Waking up the server, this can take up to a minute...';
+                dot.style.background = '#f56565';
+                text.textContent = 'Offline';
             }
-            // Poll quickly while the server wakes up or indexes are still loading
+            // Poll quickly while indexes are still building
             setTimeout(checkHealth, allReady ? 30000 : 3000);
         }
-
-        document.getElementById('statusDot').style.background = '#ed8936';
-        document.getElementById('statusText').textContent = 'Connecting to the server...';
 
         // Long-term memory
         async function loadMemory() {
