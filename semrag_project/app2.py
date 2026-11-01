@@ -16,13 +16,14 @@ from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
 from pypdf import PdfReader
 from src.cloud import embedder, gemini_client
-from src.cloud.gemini_client import check_gemini_available, GEMINI_MODEL
-from src.cloud.vector_index import load_index, local_search, global_search
+from src.cloud.gemini_client import check_gemini_available
+from src.cloud.vector_index import load_index, local_search_detailed, global_search, chunk_source
 from src.llm.answer_generator import build_prompt
 from src.memory import memory_store
 import glob
 import json
 import os
+import time
 import traceback
 import uuid
 from datetime import datetime
@@ -36,6 +37,9 @@ MEMORY_DB = os.getenv("MEMORY_DB", os.path.join(BASE_DIR, "memory.db"))
 
 # Per-visitor limits so a public deployment can't burn through the free Gemini quota
 ASK_RATE_LIMIT = os.getenv("ASK_RATE_LIMIT", "15 per minute;300 per day")
+
+# Name the UI shows for the answer engine (the underlying model provider is not exposed to visitors)
+ENGINE_NAME = os.getenv("ENGINE_NAME", "Trinetra Graph RAG")
 
 ASSISTANT_NAME = os.getenv("ASSISTANT_NAME", "Trinetra AI")
 ASSISTANT_CREATOR = os.getenv("ASSISTANT_CREATOR", "Vansh Sharma")
@@ -187,10 +191,35 @@ def search_query(system, session_id, question):
     previous = next((m['content'] for m in reversed(session['messages']) if m['role'] == 'user'), '') if session else ''
     return f"{previous} {question}".strip()
 
+def _clean(name):
+    return " ".join(name.split())
+
 def retrieve(system, session_id, question):
+    """Returns (passages, topics, trace); the trace describes the retrieval for the UI's RAG panel"""
+    started = time.time()
     index = system_states[system]['index']
     query_emb = embedder.embed([search_query(system, session_id, question)])[0]
-    return local_search(query_emb, index), global_search(query_emb, index)
+    picks, entities = local_search_detailed(query_emb, index)
+    topics = global_search(query_emb, index)
+
+    session = chat_sessions[system].get(session_id)
+    trace = {
+        'mode': 'rag',
+        'domain': DOMAINS[system]['name'],
+        'graph_size': {'chunks': len(index['chunks']), 'entities': len(index['nodes'])},
+        'entities': [{'name': name, 'similarity': round(sim, 2)}
+                     for name, sim in list({_clean(n): s for n, s in entities}.items())[:6]],
+        'passages': [{'source': chunk_source(index, p['chunk']) or DOMAINS[system]['name'],
+                      'via': p['via'],
+                      'entity': _clean(p['entity']) if p['entity'] else None,
+                      'score': round(p['score'], 2),
+                      'preview': _clean(index['chunks'][p['chunk']])[:280]} for p in picks],
+        'topics': list(dict.fromkeys(_clean(t) for t in topics))[:8],
+        'memory_facts': len(memory_store.list_facts()),
+        'history_messages': min(6, len(session['messages'])) if session else 0,
+        'retrieval_ms': round((time.time() - started) * 1000),
+    }
+    return [index['chunks'][p['chunk']] for p in picks], topics, trace
 
 def build_answer_prompt(system, session_id, question, local_res, global_res):
     return build_prompt(question, local_res, global_res, instructions_for(system),
@@ -210,7 +239,7 @@ def health():
         'status': 'ok',
         'systems': {k: {'ready': s['ready'], 'error': s['error'], 'message': s['status_message']}
                     for k, s in system_states.items()},
-        'llm_model': GEMINI_MODEL,
+        'llm_model': ENGINE_NAME,
         'llm_available': check_gemini_available()
     })
 
@@ -279,7 +308,9 @@ def delete_memory(fact_id):
 @app.route('/api/ask/stream', methods=['POST'])
 @limiter.limit(ASK_RATE_LIMIT)
 def ask_stream():
-    """Server-sent events: data: {"token": ...} ... data: {"done": true}"""
+    """Server-sent events, in order:
+    data: {"stage": "retrieving"}  data: {"rag": {...trace...}}  data: {"stage": "generating"}
+    data: {"token": "..."} ...     data: {"done": true, "session_id": "..."}"""
     system, question, session_id, error = parse_ask_request()
 
     def sse(payload):
@@ -293,16 +324,21 @@ def ask_stream():
         # "remember ...", "forget ...", "what do you remember" are answered from memory, without the LLM
         reply = memory_store.handle_command(question)
         if reply:
+            yield sse({'rag': {'mode': 'memory', 'memory_facts': len(memory_store.list_facts())}})
             yield sse({'token': reply})
             save_exchange(system, session_id, question, reply)
             yield sse({'done': True, 'session_id': session_id, 'memory_changed': True})
             return
 
+        yield sse({'stage': 'retrieving'})
         try:
-            local_res, global_res = retrieve(system, session_id, question)
-        except Exception as e:
-            yield sse({'error': f'Search failed: {e}'})
+            local_res, global_res, trace = retrieve(system, session_id, question)
+        except Exception:
+            traceback.print_exc()
+            yield sse({'error': 'Searching the knowledge base failed. Please try again.'})
             return
+        yield sse({'rag': trace})
+        yield sse({'stage': 'generating'})
 
         answer = ""
         prompt = build_answer_prompt(system, session_id, question, local_res, global_res)
@@ -324,9 +360,9 @@ def ask_question():
         return jsonify({'error': error}), 400
 
     answer = memory_store.handle_command(question)
-    local_res, global_res = [], []
+    local_res, global_res, trace = [], [], {'mode': 'memory'}
     if answer is None:
-        local_res, global_res = retrieve(system, session_id, question)
+        local_res, global_res, trace = retrieve(system, session_id, question)
         response = gemini_client.generate(build_answer_prompt(system, session_id, question, local_res, global_res))
         answer = " ".join(response.split()[:25])  # same 25-word cut as app.py's generate_answer
     save_exchange(system, session_id, question, answer)
@@ -336,6 +372,7 @@ def ask_question():
         'answer': answer,
         'local_results': local_res,
         'global_results': global_res,
+        'rag': trace,
         'system': system,
         'session_id': session_id
     })
