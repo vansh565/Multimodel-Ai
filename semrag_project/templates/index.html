@@ -1,797 +1,407 @@
-<!DOCTYPE html>
-
+!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <link rel="icon" href="data:,">
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-
     <title>Trinetra AI | Multi-Domain RAG Intelligence Platform (Cloud)</title>
-
     <style>
-
         :root {
-
             --bg-primary: #0a0a0a;
-
             --bg-secondary: #141414;
-
             --bg-tertiary: #1a1a1a;
-
             --bg-sidebar: #0f0f0f;
-
             --bg-card: #141414;
-
             --text-primary: #f7fafc;
-
             --text-secondary: #cbd5e0;
-
             --text-tertiary: #a0aec0;
-
             --border-color: #2d2d2d;
-
             --accent-legal: #4a5568;
-
             --accent-medical: #48bb78;
-
             --accent-disaster: #fc8181;
-
             --accent-all: #b794f4;
-
             --input-bg: #1a1a1a;
-
             --hover-bg: #1f1f1f;
-
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-
         }
-
-
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-
-
         body {
-
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-
             background: var(--bg-primary);
-
             color: var(--text-primary);
-
             height: 100vh;
-
             overflow: hidden;
-
         }
 
-
-
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-
         ::-webkit-scrollbar-track { background: var(--bg-tertiary); }
-
         ::-webkit-scrollbar-thumb { background: var(--text-tertiary); border-radius: 3px; }
-
-
 
         .app-container { display: flex; height: 100vh; position: relative; }
 
-
-
         /* Sidebar */
-
         .sidebar {
-
             width: 300px;
-
             background: var(--bg-secondary);
-
             border-right: 1px solid var(--border-color);
-
             display: flex;
-
             flex-direction: column;
-
             transition: transform 0.3s ease;
-
             z-index: 10;
-
         }
-
-
 
         .sidebar-header { padding: 24px 20px; border-bottom: 1px solid var(--border-color); }
-
         .logo {
-
             font-size: 1.3rem; font-weight: 600;
-
             background: linear-gradient(135deg, #fff 0%, #a0aec0 100%);
-
             -webkit-background-clip: text; background-clip: text; color: transparent;
-
             margin-bottom: 4px;
-
         }
-
         .tagline { font-size: 0.7rem; color: var(--text-tertiary); }
 
-
-
         .system-section { padding: 20px; border-bottom: 1px solid var(--border-color); }
-
         .section-label {
-
             font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
-
             letter-spacing: 0.05em; color: var(--text-tertiary); margin-bottom: 12px;
-
         }
-
         .system-buttons { display: flex; flex-direction: column; gap: 8px; }
-
         .system-btn {
-
             display: flex; align-items: center; gap: 12px; padding: 12px;
-
             background: var(--bg-tertiary); border: 1px solid var(--border-color);
-
             border-radius: 10px; cursor: pointer; transition: all 0.2s ease;
-
         }
-
         .system-btn:hover { background: var(--hover-bg); transform: translateX(4px); }
-
         .system-btn.active { border-left: 3px solid; background: var(--hover-bg); }
-
         .legal-btn.active { border-left-color: var(--accent-legal); }
-
         .medical-btn.active { border-left-color: var(--accent-medical); }
-
         .disaster-btn.active { border-left-color: var(--accent-disaster); }
-
         .all-btn.active { border-left-color: var(--accent-all); }
-
         .system-emoji { font-size: 1.3rem; }
-
         .system-info { flex: 1; }
-
         .system-name { font-size: 0.85rem; font-weight: 500; }
-
         .system-desc { font-size: 0.7rem; color: var(--text-tertiary); }
 
-
-
         .memory-section { padding: 14px 20px; border-bottom: 1px solid var(--border-color); }
-
         .memory-section summary {
-
             font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
-
             letter-spacing: 0.05em; color: var(--text-tertiary); cursor: pointer; list-style: none;
-
         }
-
         .memory-section summary::-webkit-details-marker { display: none; }
-
         .memory-section summary::before { content: '▸ '; }
-
         .memory-section details[open] summary::before { content: '▾ '; }
-
         .memory-list { max-height: 140px; overflow-y: auto; margin-top: 10px; }
-
         .memory-item {
-
             display: flex; justify-content: space-between; gap: 8px; align-items: flex-start;
-
             padding: 6px 10px; margin-bottom: 6px; background: var(--bg-tertiary);
-
             border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.72rem;
-
         }
-
         .memory-item .delete-session { opacity: 0.6; }
-
         .memory-item:hover .delete-session { opacity: 1; }
-
         .memory-hint { font-size: 0.65rem; color: var(--text-tertiary); margin-top: 6px; line-height: 1.5; }
 
-
-
         .sessions-header {
-
             padding: 16px 20px; display: flex;
-
             justify-content: space-between; align-items: center;
-
         }
-
         .sessions-title { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--text-tertiary); }
-
         .new-chat-btn {
-
             padding: 6px 14px; background: var(--bg-tertiary); border: 1px solid var(--border-color);
-
             border-radius: 8px; font-size: 0.7rem; font-weight: 500; color: var(--text-primary);
-
             cursor: pointer; transition: all 0.2s;
-
         }
-
         .new-chat-btn:hover { background: var(--hover-bg); }
 
-
-
         .sessions-list { flex: 1; overflow-y: auto; padding: 8px 12px; }
-
         .session-item {
-
             padding: 12px; margin-bottom: 8px; background: var(--bg-tertiary);
-
             border: 1px solid var(--border-color); border-radius: 10px;
-
             cursor: pointer; transition: all 0.2s;
-
         }
-
         .session-item:hover { background: var(--hover-bg); transform: translateX(2px); }
-
         .session-item.active { border-left: 3px solid; }
-
         .session-legal.active { border-left-color: var(--accent-legal); }
-
         .session-medical.active { border-left-color: var(--accent-medical); }
-
         .session-disaster.active { border-left-color: var(--accent-disaster); }
-
         .session-all.active { border-left-color: var(--accent-all); }
-
         .session-title { font-size: 0.8rem; font-weight: 500; margin-bottom: 4px; display: flex; justify-content: space-between; }
-
         .session-preview { font-size: 0.7rem; color: var(--text-tertiary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
         .delete-session { color: var(--text-tertiary); cursor: pointer; opacity: 0; transition: opacity 0.2s; }
-
         .session-item:hover .delete-session { opacity: 1; }
-
         .delete-session:hover { color: #f56565; }
 
-
-
         /* Main Chat */
-
         .main-chat { flex: 1; display: flex; flex-direction: column; background: var(--bg-primary); }
-
         .chat-header {
-
             padding: 16px 24px; border-bottom: 1px solid var(--border-color);
-
             display: flex; justify-content: space-between; align-items: center;
-
         }
-
         .chat-title { font-size: 1rem; font-weight: 500; }
-
         .status-badge { padding: 4px 12px; background: var(--bg-tertiary); border-radius: 20px; font-size: 0.7rem; }
 
-
-
         .status-bar {
-
             padding: 8px 24px; background: var(--bg-secondary);
-
             border-bottom: 1px solid var(--border-color);
-
             display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-tertiary);
-
         }
-
         .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #48bb78; margin-right: 8px; }
-
-
 
         .chat-area { flex: 1; overflow-y: auto; padding: 24px; }
 
-
-
         .message { margin-bottom: 20px; display: flex; animation: fadeIn 0.3s ease; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
         .message.user { justify-content: flex-end; }
-
         .message-content {
-
             max-width: 70%; padding: 12px 18px; border-radius: 18px;
-
             line-height: 1.6; font-size: 0.85rem;
-
         }
-
         .message.user .message-content { background: var(--bg-tertiary); border: 1px solid var(--border-color); }
-
         .message.assistant .message-content { background: var(--bg-secondary); border: 1px solid var(--border-color); }
 
-
-
         /* Streaming cursor blink */
-
         .streaming-cursor::after {
-
             content: '▋';
-
             display: inline-block;
-
             animation: blink 0.7s step-end infinite;
-
             color: var(--text-tertiary);
-
             margin-left: 2px;
-
         }
-
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-
-
         .input-container { padding: 20px 24px; border-top: 1px solid var(--border-color); }
-
         .input-wrapper { display: flex; gap: 12px; }
-
         .input-wrapper input {
-
             flex: 1; padding: 12px 16px; background: var(--input-bg);
-
             border: 1px solid var(--border-color); border-radius: 12px;
-
             font-size: 0.85rem; color: var(--text-primary); outline: none;
-
         }
-
         .input-wrapper input:focus { border-color: #4a5568; }
-
         .input-wrapper button {
-
             padding: 12px 28px; background: var(--bg-tertiary); border: 1px solid var(--border-color);
-
             border-radius: 12px; font-size: 0.85rem; font-weight: 500; color: var(--text-primary);
-
             cursor: pointer; transition: all 0.2s;
-
         }
-
         .input-wrapper button:hover:not(:disabled) { background: var(--hover-bg); }
-
         .input-wrapper button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-
-
         .loading-spinner {
-
             display: inline-block; width: 14px; height: 14px;
-
             border: 2px solid var(--border-color); border-top-color: var(--text-primary);
-
             border-radius: 50%; animation: spin 0.6s linear infinite; margin-right: 8px;
-
         }
-
         @keyframes spin { to { transform: rotate(360deg); } }
 
-
-
         .suggestions {
-
             padding: 10px 24px; background: var(--bg-secondary);
-
             border-top: 1px solid var(--border-color); overflow-x: auto; white-space: nowrap;
-
         }
-
         .suggestions-label { font-size: 0.7rem; color: var(--text-tertiary); margin-right: 12px; }
-
         .suggestion-chip {
-
             display: inline-block; padding: 5px 12px; margin-right: 8px;
-
             background: var(--bg-tertiary); border: 1px solid var(--border-color);
-
             border-radius: 16px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s;
-
         }
-
         .suggestion-chip:hover { background: var(--hover-bg); }
 
-
-
         .context-indicator {
-
             margin: 12px 24px 0 24px; padding: 8px 12px;
-
             background: var(--bg-secondary); border-radius: 8px;
-
             font-size: 0.7rem; color: var(--text-tertiary);
-
             display: none; align-items: center; gap: 8px;
-
         }
-
-
 
         .menu-toggle {
-
             display: none; position: fixed; top: 16px; left: 16px; z-index: 20;
-
             background: var(--bg-tertiary); border: 1px solid var(--border-color);
-
             border-radius: 8px; padding: 8px 12px; cursor: pointer;
-
         }
-
-
 
         @media (max-width: 768px) {
-
             .sidebar { position: fixed; left: -300px; height: 100%; z-index: 15; }
-
             .sidebar.open { left: 0; }
-
             .menu-toggle { display: block; }
-
             .message-content { max-width: 85%; }
-
         }
-
-
 
         .footer {
-
             padding: 16px 20px; 
-
             border-top: 1px solid var(--border-color); 
-
             margin-top: auto; 
-
             background: var(--bg-secondary);
-
         }
-
         .footer-content {
-
             font-size: 0.65rem;
-
             color: var(--text-tertiary);
-
             text-align: center;
-
         }
-
-
 
         /* RAG trace: shows how each answer was retrieved before it streams in */
-
         .message.assistant .message-content.has-trace { max-width: 78%; }
-
         .rag-trace {
-
             margin-bottom: 12px; padding: 10px 12px; border-radius: 12px;
-
             background: var(--bg-primary); border: 1px solid var(--border-color); font-size: 0.75rem;
-
         }
-
         .rag-head { display: flex; align-items: center; gap: 8px; color: var(--text-secondary); font-weight: 600; }
-
         .rag-head .rag-meta { margin-left: auto; font-weight: 400; color: var(--text-tertiary); }
-
         .rag-pulse {
-
             width: 8px; height: 8px; border-radius: 50%; background: var(--accent-all);
-
             box-shadow: 0 0 0 0 rgba(183, 148, 244, 0.6); animation: ragPulse 1.4s infinite;
-
         }
-
         .rag-pulse.done { animation: none; background: var(--accent-medical); box-shadow: none; }
-
         @keyframes ragPulse {
-
             0% { box-shadow: 0 0 0 0 rgba(183, 148, 244, 0.6); }
-
             100% { box-shadow: 0 0 0 8px rgba(183, 148, 244, 0); }
-
         }
-
         .rag-steps { list-style: none; margin: 8px 0 0 0; padding: 0; }
-
         .rag-step {
-
             display: flex; gap: 8px; padding: 4px 0; color: var(--text-secondary); line-height: 1.5;
-
             opacity: 0; transform: translateY(4px); animation: ragStepIn 0.35s ease forwards;
-
         }
-
         .rag-step .icon { flex: 0 0 18px; text-align: center; }
-
         .rag-step .muted { color: var(--text-tertiary); }
-
         @keyframes ragStepIn { to { opacity: 1; transform: translateY(0); } }
-
         .rag-chip {
-
             display: inline-block; margin: 2px 4px 2px 0; padding: 1px 8px; border-radius: 10px;
-
             background: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary);
-
             font-size: 0.7rem;
-
         }
-
         .rag-chip.entity { border-color: rgba(183, 148, 244, 0.5); }
-
         .rag-chip.topic { border-color: rgba(72, 187, 120, 0.45); }
-
         .rag-sources { margin-top: 6px; }
-
         .rag-sources summary { cursor: pointer; color: var(--text-tertiary); padding: 4px 0; }
-
         .rag-sources summary:hover { color: var(--text-primary); }
-
         .rag-source {
-
             margin: 6px 0; padding: 8px 10px; border-left: 2px solid var(--accent-all);
-
             background: var(--bg-secondary); border-radius: 0 8px 8px 0; color: var(--text-secondary);
-
         }
-
         .rag-source.direct { border-left-color: var(--accent-medical); }
-
         .rag-source .src-head { font-size: 0.68rem; color: var(--text-tertiary); margin-bottom: 4px; }
-
         .rag-spinner {
-
             display: inline-block; width: 10px; height: 10px; border: 2px solid var(--border-color);
-
             border-top-color: var(--accent-all); border-radius: 50%; animation: spin 0.7s linear infinite;
-
         }
-
         .answer-text.error { color: #f56565; }
-
         /* ===================== RESPONSIVE ===================== */
 
-
-
 /* Sidebar backdrop when open on mobile */
-
 .sidebar-backdrop {
-
     display: none;
-
     position: fixed;
-
     inset: 0;
-
     background: rgba(0, 0, 0, 0.55);
-
     z-index: 12;
-
 }
-
 .sidebar-backdrop.show { display: block; }
 
-
-
 /* Tablets & small laptops */
-
 @media (max-width: 1024px) {
-
     .sidebar { width: 260px; }
-
     .message-content { max-width: 80%; }
-
     .message.assistant .message-content.has-trace { max-width: 88%; }
-
     .chat-header { padding: 14px 18px; }
-
     .chat-area { padding: 18px; }
-
     .input-container { padding: 16px 18px; }
-
 }
-
-
 
 /* Mobile: sidebar becomes an overlay drawer */
-
 @media (max-width: 768px) {
-
     .sidebar {
-
         position: fixed;
-
         left: -300px;
-
         top: 0;
-
         height: 100%;
-
         width: 280px;
-
         max-width: 85vw;
-
         z-index: 15;
-
         box-shadow: var(--shadow-lg);
-
         transition: left 0.3s ease;
-
     }
-
     .sidebar.open { left: 0; }
 
-
-
     .menu-toggle {
-
         display: block;
-
         position: fixed;
-
         top: 12px;
-
         left: 12px;
-
         z-index: 20;
-
         padding: 8px 12px;
-
         background: var(--bg-tertiary);
-
         border: 1px solid var(--border-color);
-
         border-radius: 8px;
-
         color: var(--text-primary);
-
         font-size: 1.1rem;
-
         cursor: pointer;
-
     }
-
-
 
     /* Push header right so the menu button doesn't overlap the title */
-
     .chat-header { padding-left: 56px; }
-
     .status-bar { padding-left: 56px; }
 
-
-
     .message-content { max-width: 88%; }
-
     .message.assistant .message-content.has-trace { max-width: 95%; }
 
-
-
     .chat-area { padding: 16px 12px; }
-
     .input-container { padding: 12px; }
-
     .input-wrapper { gap: 8px; }
-
     .input-wrapper input { padding: 10px 14px; font-size: 16px; } /* 16px prevents iOS zoom */
-
     .input-wrapper button { padding: 10px 18px; }
 
-
-
     .suggestions { padding: 10px 12px; }
-
     .rag-trace { font-size: 0.72rem; }
-
     .rag-source { font-size: 0.7rem; }
 
-
-
     /* Bottom sheet footer isn't needed inside drawer; keep it visible */
-
     .footer { padding: 12px; }
-
 }
-
-
 
 /* Small phones */
-
 @media (max-width: 480px) {
-
     .sidebar { width: 85vw; max-width: 320px; }
-
     .chat-title { font-size: 0.9rem; }
-
     .status-badge { font-size: 0.62rem; padding: 3px 8px; }
-
     .chat-header { padding: 12px 12px 12px 54px; }
-
     .status-bar { font-size: 0.62rem; padding: 6px 12px 6px 54px; }
-
     .message-content { max-width: 92%; font-size: 0.8rem; padding: 10px 14px; }
-
     .message.assistant .message-content.has-trace { max-width: 100%; }
-
     .chat-area { padding: 12px 8px; }
-
     .input-container { padding: 10px 8px; }
-
     .input-wrapper button { padding: 10px 14px; font-size: 0.8rem; }
-
     .suggestion-chip { font-size: 0.65rem; padding: 4px 10px; }
-
     .rag-chip { font-size: 0.62rem; }
-
     .system-emoji { font-size: 1.1rem; }
-
     .logo { font-size: 1.15rem; }
-
 }
-
-
 
 /* Landscape phones: keep things compact */
-
 @media (max-height: 500px) and (orientation: landscape) {
-
     .sidebar-header { padding: 14px 16px; }
-
     .system-section { padding: 12px 16px; }
-
     .chat-area { padding: 12px; }
-
     .input-container { padding: 10px 12px; }
-
     .footer { display: none; }
-
 }
-
-
 
 /* Respect reduced motion */
-
 @media (prefers-reduced-motion: reduce) {
-
     .sidebar, .system-btn, .session-item, .message, .rag-step, .rag-pulse {
-
         transition: none !important;
-
         animation: none !important;
-
     }
-
     .streaming-cursor::after { animation: none; }
-
 }
-
     
-/* Final responsive refinements: layout only; API and application logic remain unchanged. */
+
+/* Responsive layout overrides — CSS only */
 html, body {
     width: 100%;
+    min-width: 0;
     min-height: 100%;
-    overflow-x: hidden;
 }
 
 body {
-    min-height: 100vh;
-    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
 }
 
 .app-container {
@@ -802,51 +412,46 @@ body {
     overflow: hidden;
 }
 
-.sidebar {
-    flex: 0 0 300px;
-    min-width: 0;
-    min-height: 0;
-    overflow: hidden;
-}
-
+.sidebar,
 .main-chat {
     min-width: 0;
     min-height: 0;
-    width: 0;
 }
 
-.chat-header,
-.status-bar,
-.input-container,
-.suggestions {
-    min-width: 0;
+.sidebar {
+    flex: 0 0 300px;
+    max-width: 85vw;
+    overflow: hidden;
 }
 
-.chat-title,
-#apiStatus,
-#statusText {
-    overflow-wrap: anywhere;
+.sessions-list,
+.chat-area {
+    min-height: 0;
+    overscroll-behavior: contain;
 }
 
 .chat-area {
-    min-width: 0;
-    min-height: 0;
-    overscroll-behavior: contain;
-    overflow-wrap: anywhere;
-}
-
-.message-content {
-    min-width: 0;
     overflow-wrap: anywhere;
     word-break: break-word;
 }
 
-.message-content pre,
-.message-content code,
+.message,
+.message-content {
+    min-width: 0;
+}
+
+.message-content {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
 .rag-trace,
-.rag-source {
-    max-width: 100%;
-    overflow-x: auto;
+.rag-source,
+.rag-steps,
+.rag-step {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .input-wrapper {
@@ -855,47 +460,41 @@ body {
 
 .input-wrapper input {
     min-width: 0;
-}
-
-.suggestions {
-    max-width: 100%;
-    scrollbar-width: thin;
-    -webkit-overflow-scrolling: touch;
-}
-
-.suggestion-chip,
-.system-btn,
-.new-chat-btn,
-.menu-toggle,
-.input-wrapper button {
-    touch-action: manipulation;
+    width: 100%;
 }
 
 .sidebar-backdrop {
-    cursor: pointer;
+    display: none;
 }
 
-@media (min-width: 769px) {
+/* Wide tablets and smaller laptops */
+@media (max-width: 1024px) {
     .sidebar {
-        position: relative;
-        left: auto;
-        height: 100%;
-        transform: none;
+        flex-basis: 260px;
     }
 
-    .sidebar-backdrop {
-        display: none !important;
+    .chat-header,
+    .status-bar {
+        padding-right: 16px;
     }
 
-    .menu-toggle {
-        display: none !important;
+    .chat-area {
+        padding: 18px;
+    }
+
+    .message-content {
+        max-width: 82%;
+    }
+
+    .message.assistant .message-content.has-trace {
+        max-width: 90%;
     }
 }
 
+/* Phones and portrait tablets */
 @media (max-width: 768px) {
     .app-container {
-        height: 100vh;
-        height: 100dvh;
+        position: relative;
     }
 
     .sidebar {
@@ -908,10 +507,10 @@ body {
         height: 100vh;
         height: 100dvh;
         flex: none;
+        z-index: 30;
         transform: translateX(-105%);
         transition: transform 0.28s ease;
-        z-index: 15;
-        padding-bottom: env(safe-area-inset-bottom);
+        box-shadow: var(--shadow-lg);
     }
 
     .sidebar.open {
@@ -919,20 +518,26 @@ body {
         transform: translateX(0);
     }
 
-    .sidebar-backdrop.show {
+    /* The existing backdrop element follows the drawer state; no JavaScript changes. */
+    .app-container:has(.sidebar.open) .sidebar-backdrop {
         display: block;
         position: fixed;
         inset: 0;
-        z-index: 12;
+        z-index: 25;
     }
 
-    body.sidebar-open {
-        overflow: hidden;
+    .menu-toggle {
+        display: block;
+        position: fixed;
+        top: max(10px, env(safe-area-inset-top));
+        left: max(10px, env(safe-area-inset-left));
+        z-index: 40;
     }
 
     .main-chat {
         width: 100%;
-        flex: 1 1 auto;
+        height: 100%;
+        flex: 1 1 100%;
     }
 
     .chat-header {
@@ -942,39 +547,43 @@ body {
     }
 
     .chat-title {
-        font-size: 0.95rem;
-        line-height: 1.3;
+        min-width: 0;
+        overflow-wrap: anywhere;
     }
 
     .status-badge {
-        max-width: 42%;
-        overflow-wrap: anywhere;
+        max-width: 45%;
         text-align: right;
+        overflow-wrap: anywhere;
     }
 
     .status-bar {
+        padding: 8px 12px 8px 58px;
         gap: 8px;
-        padding: 8px 12px;
-        padding-left: 58px;
+        align-items: center;
         flex-wrap: wrap;
     }
 
+    #apiStatus {
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
     .chat-area {
-        padding: 14px 10px;
+        padding: 14px 12px;
     }
 
-    .message {
-        width: 100%;
+    .message-content {
+        max-width: 90%;
     }
 
-    .message-content,
     .message.assistant .message-content.has-trace {
-        max-width: min(94%, 760px);
+        max-width: 96%;
     }
 
     .input-container {
-        padding: 10px;
-        padding-bottom: max(10px, env(safe-area-inset-bottom));
+        padding: 12px;
+        padding-bottom: max(12px, env(safe-area-inset-bottom));
     }
 
     .input-wrapper {
@@ -982,8 +591,8 @@ body {
     }
 
     .input-wrapper input {
-        width: 100%;
         font-size: 16px;
+        padding: 11px 12px;
     }
 
     .input-wrapper button {
@@ -992,23 +601,30 @@ body {
     }
 
     .suggestions {
-        padding: 9px 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
     }
 
-    .context-indicator {
-        margin: 10px 10px 0;
-        overflow-wrap: anywhere;
+    .suggestions-label,
+    .suggestion-chip {
+        flex: 0 0 auto;
     }
 
     .footer {
-        margin-top: 0;
+        padding: 12px;
     }
 }
 
+/* Small phones */
 @media (max-width: 480px) {
     .chat-header {
         min-height: 54px;
-        padding: 10px 9px 10px 54px;
+        padding: 10px 10px 10px 54px;
     }
 
     .chat-title {
@@ -1017,27 +633,26 @@ body {
 
     .status-badge {
         font-size: 0.6rem;
-        padding: 4px 7px;
+        padding: 3px 7px;
     }
 
     .status-bar {
         font-size: 0.62rem;
-        padding: 7px 9px 7px 54px;
-    }
-
-    #apiStatus {
-        max-width: 100%;
+        padding: 7px 10px 7px 54px;
     }
 
     .chat-area {
-        padding: 10px 7px;
+        padding: 10px 8px;
     }
 
-    .message-content,
-    .message.assistant .message-content.has-trace {
-        max-width: 97%;
+    .message-content {
+        max-width: 94%;
         padding: 10px 12px;
         font-size: 0.82rem;
+    }
+
+    .message.assistant .message-content.has-trace {
+        max-width: 100%;
     }
 
     .rag-trace {
@@ -1045,12 +660,13 @@ body {
         font-size: 0.68rem;
     }
 
-    .rag-head {
-        flex-wrap: wrap;
+    .rag-step {
+        gap: 6px;
     }
 
-    .rag-head .rag-meta {
-        margin-left: 0;
+    .input-container {
+        padding: 9px 8px;
+        padding-bottom: max(9px, env(safe-area-inset-bottom));
     }
 
     .input-wrapper button {
@@ -1058,37 +674,50 @@ body {
         font-size: 0.78rem;
     }
 
-    .suggestions-label {
-        display: block;
-        margin: 0 0 6px;
+    .suggestions {
+        padding: 8px;
     }
 
-    .menu-toggle {
-        top: 9px;
-        left: 9px;
-        padding: 7px 10px;
+    .suggestion-chip {
+        font-size: 0.65rem;
+        padding: 5px 9px;
+    }
+
+    .context-indicator {
+        margin-left: 8px;
+        margin-right: 8px;
     }
 }
 
-@media (max-height: 520px) and (max-width: 768px) {
+/* Very short landscape screens */
+@media (max-height: 500px) and (orientation: landscape) {
     .sidebar-header {
-        padding: 12px 16px;
+        padding: 10px 14px;
     }
 
-    .system-section {
-        padding: 10px 16px;
-    }
-
+    .system-section,
     .memory-section {
-        padding: 9px 16px;
+        padding: 9px 14px;
     }
 
-    .sessions-header {
-        padding: 10px 16px;
+    .chat-header {
+        min-height: 46px;
+        padding-top: 7px;
+        padding-bottom: 7px;
+    }
+
+    .chat-area {
+        padding-top: 8px;
+        padding-bottom: 8px;
     }
 
     .footer {
         display: none;
+    }
+
+    .input-container {
+        padding-top: 7px;
+        padding-bottom: 7px;
     }
 }
 
@@ -1097,1309 +726,655 @@ body {
         transition: none !important;
     }
 }
-
 </style>
-
 </head>
-
 <body>
-
     <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
 
-
-
     <div class="app-container"><div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
-
         <!-- Sidebar -->
-
         <div class="sidebar" id="sidebar">
-
             <div class="sidebar-header">
-
                 <div class="logo">Trinetra AI</div>
-
                 <div class="tagline">Legal · Medical · Disaster</div>
-
             </div>
-
-
 
             <div class="system-section">
-
                 <div class="section-label">Knowledge Domain</div>
-
                 <div class="system-buttons">
-
                     <div class="system-btn legal-btn" onclick="selectSystem('legal')">
-
                         <span class="system-emoji">⚖️</span>
-
                         <div class="system-info">
-
                             <div class="system-name">Legal & Constitutional</div>
-
                             <div class="system-desc">IPC, Constitution, Cyber Laws</div>
-
                         </div>
-
                     </div>
-
                     <div class="system-btn medical-btn" onclick="selectSystem('medical')">
-
                         <span class="system-emoji">🏥</span>
-
                         <div class="system-info">
-
                             <div class="system-name">Medical Information</div>
-
                             <div class="system-desc">Diseases, Treatments, Doctors</div>
-
                         </div>
-
                     </div>
-
                     <div class="system-btn disaster-btn" onclick="selectSystem('disaster')">
-
                         <span class="system-emoji">🌊</span>
-
                         <div class="system-info">
-
                             <div class="system-name">Disaster Management</div>
-
                             <div class="system-desc">Emergency Response, Safety</div>
-
                         </div>
-
                     </div>
-
                     <div class="system-btn all-btn" onclick="selectSystem('all')">
-
                         <span class="system-emoji">🌐</span>
-
                         <div class="system-info">
-
                             <div class="system-name">All-in-One</div>
-
                             <div class="system-desc">Integrated Knowledge</div>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
-
 
             <div class="memory-section">
-
                 <details id="memoryPanel">
-
                     <summary>🧠 Long-term memory (<span id="memoryCount">0</span>)</summary>
-
                     <div class="memory-list" id="memoryList"></div>
-
                     <div class="memory-hint">
-
                         In chat, say <strong>"remember …"</strong> to teach me, <strong>"forget …"</strong> to remove,
-
                         or ask <strong>"what do you remember?"</strong>
-
                     </div>
-
                 </details>
-
             </div>
-
-
 
             <div class="sessions-header">
-
                 <div class="sessions-title">Chat History</div>
-
                 <button class="new-chat-btn" onclick="createNewChat()">+ New Chat</button>
-
             </div>
-
-
 
             <div class="sessions-list" id="sessionsList">
-
                 <div style="text-align: center; padding: 20px; color: #666;">Select a system to start</div>
-
             </div>
-
-
-
+            
             <div class="footer">
-
                 <div class="footer-content">
-
                     Developed with ❤️ by <strong>Vansh Sharma</strong>
-
                 </div>
-
             </div>
-
         </div>
-
-
 
         <!-- Main Chat -->
-
         <div class="main-chat">
-
             <div class="chat-header">
-
                 <div class="chat-title" id="chatTitle">Select a System</div>
-
                 <div class="status-badge" id="systemBadge">Ready</div>
-
             </div>
-
-
 
             <div class="status-bar">
-
                 <div>
-
                     <span class="status-dot" id="statusDot"></span>
-
                     <span id="statusText">Ready</span>
-
                 </div>
-
                 <div id="apiStatus">Graph RAG · live streaming</div>
-
             </div>
-
-
 
             <div id="contextIndicator" class="context-indicator">
-
                 <span>◉</span> Context active — conversation history remembered
-
             </div>
-
-
 
             <div class="chat-area" id="chatArea">
-
                 <div class="message assistant">
-
                     <div class="message-content">
-
                         <strong>Welcome to Trinetra AI</strong><br><br>
-
                         Select a knowledge domain from the sidebar to begin. Each domain has its own separate chat history.
-
                     </div>
-
                 </div>
-
             </div>
-
-
 
             <div class="suggestions" id="suggestions">
-
                 <span class="suggestions-label">Quick queries:</span>
-
                 <span class="suggestion-chip" onclick="askSuggestion('What is Article 21?')">Article 21</span>
-
                 <span class="suggestion-chip" onclick="askSuggestion('IPC Section 420')">IPC 420</span>
-
                 <span class="suggestion-chip" onclick="askSuggestion('Hypertension treatment')">Hypertension</span>
-
                 <span class="suggestion-chip" onclick="askSuggestion('Earthquake safety')">Earthquake safety</span>
-
             </div>
-
-
 
             <div class="input-container">
-
                 <div class="input-wrapper">
-
                     <input type="text" id="questionInput" placeholder="Type your question..." onkeypress="handleKeyPress(event)">
-
                     <button onclick="sendQuestion()" id="sendBtn">Send</button>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
-
-
     <script>
-
         // Configuration
-
         // Cloud backend (app2.py on Render). When this page is served by that server itself, or by a
-
         // local app2.py (localhost), it talks to its own origin; opened as a file or hosted anywhere
-
         // else (GitHub Pages, Netlify, ...), it calls the Render deployment.
-
         const RENDER_API = 'https://multimodel-ai-9wyd.onrender.com';
-
         const isOwnServer = location.origin === RENDER_API || ['localhost', '127.0.0.1'].includes(location.hostname);
-
         const API_BASE = isOwnServer ? '' : RENDER_API;
-
-
-
+        
         // State
-
         let currentSystem = null;
-
         let currentSessionId = null;
-
         let isProcessing = false;
-
         let currentReader = null;
-
         let sessionsCache = { legal: [], medical: [], disaster: [], all: [] };
 
-
-
         const systemNames = {
-
             legal: 'Legal & Constitutional',
-
             medical: 'Medical Information',
-
             disaster: 'Disaster Management',
-
             all: 'All-in-One'
-
         };
-
-
 
         const suggestionsMap = {
-
             legal: ['What is Article 21?', 'IPC Section 420', 'Cyber stalking laws', 'Fundamental rights', 'Bail provisions'],
-
             medical: ['Hypertension treatment', 'Diabetes management', 'COVID-19 symptoms', 'First aid', 'Vaccination schedule'],
-
             disaster: ['Earthquake safety', 'Flood preparedness', 'Cyclone protocols', 'Fire emergency', 'Pandemic guidelines'],
-
             all: ['How do laws protect during disasters?', 'Medical emergency response', 'Integrated safety protocols']
-
         };
 
-
-
         // UI Helpers
-
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const backdrop = document.getElementById('sidebarBackdrop');
-            const isOpen = sidebar.classList.toggle('open');
-            if (backdrop) backdrop.classList.toggle('show', isOpen);
-            document.body.classList.toggle('sidebar-open', isOpen);
+        function toggleSidebar() { 
+            document.getElementById('sidebar').classList.toggle('open'); 
         }
-
-
 
         function escapeHtml(text) {
-
             const div = document.createElement('div');
-
             div.textContent = text;
-
             return div.innerHTML;
-
         }
-
-
 
         function formatText(raw) {
-
             let t = escapeHtml(raw);
-
             t = t.replace(/\n/g, '<br>');
-
-            t = t.replace(/**\\\*\\\***(.\*?)**\\\*\\\***/g, '<strong>$1</strong>');
-
+            t = t.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             return t;
-
         }
-
-
 
         function updateSuggestions(system) {
-
             const chips = (suggestionsMap[system] || suggestionsMap.legal)
-
-                .map(s => `<span class="suggestion-chip" onclick="askSuggestion('${s.replace(/'/g, "\\\\'")}')">${escapeHtml(s)}</span>`)
-
+                .map(s => `<span class="suggestion-chip" onclick="askSuggestion('${s.replace(/'/g, "\\'")}')">${escapeHtml(s)}</span>`)
                 .join('');
-
             document.getElementById('suggestions').innerHTML = 
-
                 '<span class="suggestions-label">Quick queries:</span>' + chips;
-
         }
-
-
 
         // System Management
-
         async function selectSystem(system) {
-
             if (currentSystem === system) return;
-
-
-
+            
             currentSystem = system;
-
             currentSessionId = null;
 
-
-
             // Update UI
-
             document.querySelectorAll('.system-btn').forEach(b => b.classList.remove('active'));
-
             document.querySelector(`.${system}-btn`).classList.add('active');
 
-
-
             const icons = { legal: '⚖️', medical: '🏥', disaster: '🌊', all: '🌐' };
-
             document.getElementById('systemBadge').innerHTML = `${icons[system]} ${systemNames[system]}`;
-
             document.getElementById('chatTitle').innerHTML = systemNames[system];
-
             updateSuggestions(system);
 
-
-
             // Clear chat area with loading message
-
             document.getElementById('chatArea').innerHTML = `
-
                 <div class="message assistant">
-
                     <div class="message-content">
-
                         <strong>Loading ${systemNames[system]} System...</strong><br><br>
-
                         Retrieving chat history...
-
                     </div>
-
                 </div>`;
 
-
-
             await loadSessions();
-
             if (currentSystem !== system) return;  // another domain was picked meanwhile
 
-
-
             if (!sessionsCache[currentSystem] || sessionsCache[currentSystem].length === 0) {
-
                 await createNewChat();
-
             } else {
-
                 await loadSession(sessionsCache[currentSystem][0].id);
-
             }
-
-
 
             if (window.innerWidth <= 768) {
-
                 document.getElementById('sidebar').classList.remove('open');
-
             }
-
         }
-
-
 
         async function loadSessions() {
-
             if (!currentSystem) return;
-
-
-
+            
             const system = currentSystem;
-
             try {
-
                 const res = await fetch(`${API_BASE}/api/sessions/${system}`);
-
                 const data = await res.json();
-
                 sessionsCache[system] = data.sessions || [];
-
                 if (system !== currentSystem) return;  // stale response for a domain no longer shown
 
-
-
                 const list = document.getElementById('sessionsList');
-
                 if (!sessionsCache[currentSystem].length) {
-
                     list.innerHTML = '<div style="text-align:center;padding:20px;color:#666">No chats yet<br>Click "New Chat" to start</div>';
-
                     return;
-
                 }
-
-
 
                 list.innerHTML = '';
-
                 for (const s of sessionsCache[currentSystem]) {
-
                     const div = document.createElement('div');
-
                     div.className = `session-item session-${currentSystem}${s.id === currentSessionId ? ' active' : ''}`;
-
                     div.innerHTML = `
-
                         <div class="session-title">
-
                             <span>${escapeHtml(s.title)}</span>
-
                             <span class="delete-session" onclick="event.stopPropagation();deleteSession('${s.id}')">×</span>
-
                         </div>
-
                         <div class="session-preview">${escapeHtml(s.preview)}</div>`;
-
                     div.onclick = () => loadSession(s.id);
-
                     list.appendChild(div);
-
                 }
-
             } catch (e) { 
-
                 console.error('loadSessions:', e); 
-
             }
-
         }
-
-
 
         async function createNewChat() {
-
             if (!currentSystem) { 
-
                 alert('Please select a system first'); 
-
                 return; 
-
             }
-
-
-
+            
             const system = currentSystem;
-
             try {
-
                 const res = await fetch(`${API_BASE}/api/sessions/${system}`, { 
-
                     method: 'POST', 
-
                     headers: { 'Content-Type': 'application/json' } 
-
                 });
-
                 const data = await res.json();
-
                 if (system !== currentSystem) return;  // another domain was picked meanwhile
-
                 currentSessionId = data.session_id;
-
-
-
+                
                 document.getElementById('chatArea').innerHTML = `
-
                     <div class="message assistant">
-
                         <div class="message-content">
-
                             <strong>${systemNames[currentSystem]} System</strong><br><br>
-
                             New conversation started. Ask me anything!
-
                         </div>
-
                     </div>`;
-
                 document.getElementById('contextIndicator').style.display = 'none';
-
                 await loadSessions();
-
             } catch (e) { 
-
                 console.error('createNewChat:', e); 
-
             }
-
         }
-
-
 
         async function loadSession(sessionId) {
-
             if (!currentSystem) return;
-
-
-
+            
             const system = currentSystem;
-
             try {
-
                 const res = await fetch(`${API_BASE}/api/sessions/${system}/${sessionId}`);
-
                 const data = await res.json();
-
                 if (system !== currentSystem) return;  // another domain was picked meanwhile
-
                 currentSessionId = sessionId;
 
-
-
                 const area = document.getElementById('chatArea');
-
                 area.innerHTML = '';
 
-
-
                 if (!data.messages.length) {
-
                     area.innerHTML = `
-
                         <div class="message assistant">
-
                             <div class="message-content">
-
                                 <strong>${systemNames[currentSystem]} System</strong><br><br>How may I assist you today?
-
                             </div>
-
                         </div>`;
-
                     document.getElementById('contextIndicator').style.display = 'none';
-
                 } else {
-
                     data.messages.forEach(m => addMessage(m.content, m.role, false));
-
                     document.getElementById('contextIndicator').style.display = 'flex';
-
                 }
-
                 await loadSessions();
-
             } catch (e) { 
-
                 console.error('loadSession:', e); 
-
             }
-
         }
-
-
 
         async function deleteSession(sessionId) {
-
             if (!confirm('Delete this conversation? This action cannot be undone.')) return;
-
-
-
+            
             try {
-
                 await fetch(`${API_BASE}/api/sessions/${currentSystem}/${sessionId}`, { method: 'DELETE' });
-
                 sessionsCache[currentSystem] = sessionsCache[currentSystem].filter(s => s.id !== sessionId);
-
-
-
+                
                 if (currentSessionId === sessionId) {
-
                     currentSessionId = null;
-
                     document.getElementById('chatArea').innerHTML = `
-
                         <div class="message assistant">
-
                             <div class="message-content">Conversation deleted. Create a new chat to continue.</div>
-
                         </div>`;
-
                     document.getElementById('contextIndicator').style.display = 'none';
-
                 }
-
                 await loadSessions();
-
                 if (!sessionsCache[currentSystem].length) await createNewChat();
-
             } catch (e) { 
-
                 console.error('deleteSession:', e); 
-
             }
-
         }
-
-
 
         // Message Handling
-
         function addMessage(text, sender, isLoading = false) {
-
             const area = document.getElementById('chatArea');
-
             const div = document.createElement('div');
-
             div.className = `message ${sender}`;
 
-
-
             const content = document.createElement('div');
-
             content.className = 'message-content';
 
-
-
             if (isLoading) {
-
                 content.innerHTML = '<span class="loading-spinner"></span> Processing...';
-
             } else {
-
                 content.innerHTML = formatText(text);
-
             }
-
-
 
             div.appendChild(content);
-
             area.appendChild(div);
-
             area.scrollTop = area.scrollHeight;
-
             return div;
-
         }
-
-
 
         // Typewriter: reveals streamed text smoothly, speeding up when it falls behind
-
         function createTypewriter(el, area) {
-
             let target = '', shown = 0, timer = null, onDrained = null;
-
             function tick() {
-
                 const backlog = target.length - shown;
-
                 if (backlog <= 0) {
-
                     timer = null;
-
                     if (onDrained) { const cb = onDrained; onDrained = null; cb(); }
-
                     return;
-
                 }
-
                 shown += Math.max(2, Math.ceil(backlog / 60));
-
                 el.innerHTML = formatText(target.slice(0, shown));
-
                 area.scrollTop = area.scrollHeight;
-
                 timer = setTimeout(tick, 20);
-
             }
-
             return {
-
                 push(text) { target += text; if (!timer) tick(); },
-
                 whenDone() {
-
                     return new Promise(resolve => {
-
                         if (!timer && shown >= target.length) resolve(); else onDrained = resolve;
-
                     });
-
                 },
-
                 get text() { return target; }
-
             };
-
         }
-
-
 
         // RAG trace: shows how the answer was found (graph entities, passages, topics, memory)
-
         function chips(items, cls) {
-
             return items.map(t => `<span class="rag-chip ${cls}">${escapeHtml(t)}</span>`).join('');
-
         }
-
-
 
         function ragStep(icon, html, delayIndex) {
-
             return `<li class="rag-step" style="animation-delay:${delayIndex * 140}ms">
-
                         <span class="icon">${icon}</span><span>${html}</span></li>`;
-
         }
-
-
 
         function showSearching(traceDiv) {
-
             traceDiv.innerHTML = `<div class="rag-head"><span class="rag-spinner"></span>
-
                 Searching the knowledge graph...</div>`;
-
         }
-
-
 
         function renderTrace(traceDiv, rag) {
-
             if (rag.mode === 'memory') {
-
                 traceDiv.innerHTML = `<div class="rag-head"><span class="rag-pulse done"></span>Long-term memory</div>
-
                     <ol class="rag-steps">${ragStep('🧠',
-
                         `Memory command: answered from long-term memory, no document search needed
-
                          <span class="muted">(${rag.memory_facts} saved fact${rag.memory_facts === 1 ? '' : 's'})</span>`, 0)}</ol>`;
-
                 return;
-
             }
-
             const sources = [...new Set(rag.passages.map(p => p.source))];
-
             const viaGraph = rag.passages.filter(p => p.via === 'graph').length;
-
             const steps = [
-
                 ragStep('🔎', `Understood your question as a 384-dimensional semantic vector
-
                                <span class="muted">(MiniLM embedding)</span>`, 0),
-
                 ragStep('🕸️', rag.entities.length
-
                     ? `Matched <b>${rag.entities.length}</b> entities in a knowledge graph of
-
                        ${rag.graph_size.entities} entities: ${chips(rag.entities.map(e => e.name), 'entity')}`
-
                     : `No specific entity matched in the ${rag.graph_size.entities}-entity graph, so semantic search was used`, 1),
-
                 ragStep('📄', `Retrieved <b>${rag.passages.length}</b> passages from
-
                                ${chips(sources, '')}<span class="muted">${viaGraph} via graph links,
-
                                ${rag.passages.length - viaGraph} by semantic similarity</span>`, 2),
-
             ];
-
             if (rag.topics.length) {
-
                 steps.push(ragStep('🧭', `Related topics from community detection: ${chips(rag.topics.slice(0, 6), 'topic')}`, 3));
-
             }
-
             steps.push(ragStep('🧠', `Memory: <b>${rag.memory_facts}</b> long-term fact${rag.memory_facts === 1 ? '' : 's'},
-
                                       <b>${rag.history_messages}</b> recent message${rag.history_messages === 1 ? '' : 's'}`, steps.length));
-
             steps.push(`<li class="rag-step generating" style="animation-delay:${steps.length * 140}ms">
-
                             <span class="icon">✍️</span><span>Writing the answer from these passages...</span></li>`);
 
-
-
             const sourceItems = rag.passages.map((p, i) => `
-
                 <div class="rag-source ${p.via}">
-
                     <div class="src-head">#${i + 1} · ${escapeHtml(p.source)} ·
-
                         ${p.via === 'graph' ? `graph link via “${escapeHtml(p.entity)}”` : `semantic match ${Math.round(p.score * 100)}%`}</div>
-
                     ${escapeHtml(p.preview)}…
-
                 </div>`).join('');
 
-
-
             traceDiv.innerHTML = `
-
                 <div class="rag-head"><span class="rag-pulse"></span>RAG pipeline · ${escapeHtml(rag.domain)}
-
                     <span class="rag-meta">retrieval ${rag.retrieval_ms} ms</span></div>
-
                 <ol class="rag-steps">${steps.join('')}</ol>
-
                 <details class="rag-sources"><summary>View ${rag.passages.length} source passages</summary>${sourceItems}</details>`;
-
         }
-
-
 
         function finishTrace(traceDiv) {
-
             traceDiv.querySelector('.rag-pulse')?.classList.add('done');
-
             const gen = traceDiv.querySelector('.rag-step.generating span:last-child');
-
             if (gen) gen.textContent = 'Answer streamed from the retrieved passages';
-
             const icon = traceDiv.querySelector('.rag-step.generating .icon');
-
             if (icon) icon.textContent = '✅';
-
         }
 
-
-
         // Streaming Question
-
         async function sendQuestion() {
-
             if (isProcessing || !currentSystem) {
-
                 if (!currentSystem) alert('Please select a system first');
-
                 return;
-
             }
 
-
-
             const input = document.getElementById('questionInput');
-
             const question = input.value.trim();
-
             if (!question) return;
 
-
-
             addMessage(question, 'user');
-
             input.value = '';
-
             isProcessing = true;
-
             document.getElementById('sendBtn').disabled = true;
 
-
-
             // Assistant message: RAG trace on top, streamed answer below
-
             const area = document.getElementById('chatArea');
-
             const msgDiv = document.createElement('div');
-
             msgDiv.className = 'message assistant';
-
             const bubble = document.createElement('div');
-
             bubble.className = 'message-content has-trace';
-
             const traceDiv = document.createElement('div');
-
             traceDiv.className = 'rag-trace';
-
             showSearching(traceDiv);
-
             const contentDiv = document.createElement('div');
-
             contentDiv.className = 'answer-text streaming-cursor';
-
             bubble.appendChild(traceDiv);
-
             bubble.appendChild(contentDiv);
-
             msgDiv.appendChild(bubble);
-
             area.appendChild(msgDiv);
-
             area.scrollTop = area.scrollHeight;
-
-
 
             const typer = createTypewriter(contentDiv, area);
 
-
-
             try {
-
                 const res = await fetch(`${API_BASE}/api/ask/stream`, {
-
                     method: 'POST',
-
                     headers: { 'Content-Type': 'application/json' },
-
                     body: JSON.stringify({
-
                         system: currentSystem,
-
                         question: question,
-
                         session_id: currentSessionId
-
                     })
-
                 });
 
-
-
                 if (!res.ok) {
-
                     let message = `HTTP ${res.status}`;
-
                     try { message = (await res.json()).error || message; } catch {}
-
                     const httpError = new Error(message);
-
                     httpError.fromServer = true;
-
                     throw httpError;
-
                 }
 
-
-
                 const reader = res.body.getReader();
-
                 const decoder = new TextDecoder();
-
                 let buffer = '';
 
-
-
                 while (true) {
-
                     const { done, value } = await reader.read();
-
                     if (done) break;
 
-
-
                     buffer += decoder.decode(value, { stream: true });
-
                     const lines = buffer.split('\n');
-
                     buffer = lines.pop();
 
-
-
                     for (const line of lines) {
-
                         const trimmed = line.trim();
-
                         if (!trimmed.startsWith('data: ')) continue;
 
-
-
                         const jsonStr = trimmed.slice(6);
-
                         try {
-
                             const parsed = JSON.parse(jsonStr);
 
-
-
                             if (parsed.error) {
-
                                 traceDiv.remove();
-
                                 contentDiv.classList.remove('streaming-cursor');
-
                                 contentDiv.innerHTML = `<span style="color:#f56565">Error: ${escapeHtml(parsed.error)}</span>`;
-
                                 break;
-
                             }
-
-
 
                             if (parsed.stage === 'retrieving') showSearching(traceDiv);
 
-
-
                             if (parsed.rag) {
-
                                 renderTrace(traceDiv, parsed.rag);
-
                                 area.scrollTop = area.scrollHeight;
-
                             }
-
-
 
                             if (parsed.token) typer.push(parsed.token);
 
-
-
                             if (parsed.done) {
-
                                 await typer.whenDone();   // let the typewriter finish before closing
-
                                 contentDiv.classList.remove('streaming-cursor');
-
                                 if (typer.text.trim().startsWith('Error:')) contentDiv.classList.add('error');
-
                                 finishTrace(traceDiv);
-
                                 if (parsed.session_id) currentSessionId = parsed.session_id;
-
                                 if (parsed.memory_changed) {
-
                                     await loadMemory();
-
                                     document.getElementById('memoryPanel').open = true;
-
                                 }
-
                                 await loadSessions();
-
                                 document.getElementById('contextIndicator').style.display = 'flex';
-
                                 break;
-
                             }
-
                         } catch (e) {
-
                             console.warn('Parse error:', e);
-
                         }
-
                     }
-
                 }
-
                 // Stream closed without a "done" event (e.g. connection dropped): still finish cleanly
-
                 if (contentDiv.classList.contains('streaming-cursor')) {
-
                     await typer.whenDone();
-
                     contentDiv.classList.remove('streaming-cursor');
-
                     finishTrace(traceDiv);
-
                 }
-
             } catch (err) {
-
                 traceDiv.remove();
-
                 contentDiv.classList.remove('streaming-cursor');
-
                 const reason = err.fromServer ? escapeHtml(err.message) : 'Unable to connect to server. Please try again.';
-
                 contentDiv.innerHTML = `<span style="color:#f56565">Error: ${reason}</span>`;
-
                 console.error('Stream error:', err);
-
             } finally {
-
                 isProcessing = false;
-
                 document.getElementById('sendBtn').disabled = false;
-
                 document.getElementById('questionInput').focus();
-
             }
-
         }
-
-
 
         function askSuggestion(q) {
-
             document.getElementById('questionInput').value = q;
-
             sendQuestion();
-
         }
-
-
 
         function handleKeyPress(e) {
-
             if (e.key === 'Enter' && !isProcessing) sendQuestion();
-
         }
-
-
 
         // Health Check
-
         async function checkHealth() {
-
             const dot = document.getElementById('statusDot');
-
             const text = document.getElementById('statusText');
-
             let allReady = false;
-
             try {
-
                 const res = await fetch(`${API_BASE}/health`);
-
                 const data = await res.json();
-
                 const sys = data.systems[currentSystem || 'legal'];
-
                 allReady = Object.values(data.systems).every(s => s.ready || s.error);
 
-
-
                 if (sys.error) {
-
                     dot.style.background = '#f56565';
-
                     text.textContent = `Index error: ${sys.error}`;
-
                 } else if (!sys.ready) {
-
                     dot.style.background = '#ed8936';
-
                     text.textContent = `Loading knowledge base: ${sys.message}`;
-
                 } else if (!data.llm_available) {
-
                     dot.style.background = '#ed8936';
-
                     text.textContent = 'Online (answer engine unavailable right now)';
-
                 } else {
-
                     dot.style.background = '#48bb78';
-
                     text.textContent = 'Online';
-
                 }
-
                 document.getElementById('apiStatus').textContent = `⚡ ${data.llm_model} · live streaming`;
-
             } catch {
-
                 // Free Render instances sleep after 15 idle minutes; the first request wakes them up
-
                 dot.style.background = '#ed8936';
-
                 text.textContent = 'Waking up the server, this can take up to a minute...';
-
             }
-
             // Poll quickly while the server wakes up or indexes are still loading
-
             setTimeout(checkHealth, allReady ? 30000 : 3000);
-
         }
-
-
 
         document.getElementById('statusDot').style.background = '#ed8936';
-
         document.getElementById('statusText').textContent = 'Connecting to the server...';
 
-
-
         // Long-term memory
-
         async function loadMemory() {
-
             try {
-
                 const res = await fetch(`${API_BASE}/api/memory`);
-
                 const facts = (await res.json()).facts || [];
-
                 document.getElementById('memoryCount').textContent = facts.length;
-
                 const list = document.getElementById('memoryList');
-
                 list.innerHTML = facts.length ? '' :
-
                     '<div class="memory-hint">Nothing remembered yet.</div>';
-
                 for (const f of facts) {
-
                     const item = document.createElement('div');
-
                     item.className = 'memory-item';
-
                     item.innerHTML = `<span>${escapeHtml(f.fact)}</span>
-
                         <span class="delete-session" title="Forget this">×</span>`;
-
                     item.querySelector('.delete-session').onclick = () => deleteMemory(f.id);
-
                     list.appendChild(item);
-
                 }
-
             } catch (e) {
-
                 console.error('loadMemory:', e);
-
             }
-
         }
-
-
 
         async function deleteMemory(id) {
-
             await fetch(`${API_BASE}/api/memory/${id}`, { method: 'DELETE' });
-
             await loadMemory();
-
         }
 
-
-
         // Initialize
-
         setTimeout(() => { if (!currentSystem) selectSystem('legal'); }, 500);  // unless the user already picked one
-
         checkHealth();
-
         loadMemory();
-
     </script>
-
 </body>
-
 </html>
