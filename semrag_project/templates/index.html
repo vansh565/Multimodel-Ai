@@ -230,10 +230,57 @@
             background: var(--bg-secondary);
         }
         .footer-content {
-            font-size: 0.65rem; 
-            color: var(--text-tertiary); 
+            font-size: 0.65rem;
+            color: var(--text-tertiary);
             text-align: center;
         }
+
+        /* RAG trace: shows how each answer was retrieved before it streams in */
+        .message.assistant .message-content.has-trace { max-width: 78%; }
+        .rag-trace {
+            margin-bottom: 12px; padding: 10px 12px; border-radius: 12px;
+            background: var(--bg-primary); border: 1px solid var(--border-color); font-size: 0.75rem;
+        }
+        .rag-head { display: flex; align-items: center; gap: 8px; color: var(--text-secondary); font-weight: 600; }
+        .rag-head .rag-meta { margin-left: auto; font-weight: 400; color: var(--text-tertiary); }
+        .rag-pulse {
+            width: 8px; height: 8px; border-radius: 50%; background: var(--accent-all);
+            box-shadow: 0 0 0 0 rgba(183, 148, 244, 0.6); animation: ragPulse 1.4s infinite;
+        }
+        .rag-pulse.done { animation: none; background: var(--accent-medical); box-shadow: none; }
+        @keyframes ragPulse {
+            0% { box-shadow: 0 0 0 0 rgba(183, 148, 244, 0.6); }
+            100% { box-shadow: 0 0 0 8px rgba(183, 148, 244, 0); }
+        }
+        .rag-steps { list-style: none; margin: 8px 0 0 0; padding: 0; }
+        .rag-step {
+            display: flex; gap: 8px; padding: 4px 0; color: var(--text-secondary); line-height: 1.5;
+            opacity: 0; transform: translateY(4px); animation: ragStepIn 0.35s ease forwards;
+        }
+        .rag-step .icon { flex: 0 0 18px; text-align: center; }
+        .rag-step .muted { color: var(--text-tertiary); }
+        @keyframes ragStepIn { to { opacity: 1; transform: translateY(0); } }
+        .rag-chip {
+            display: inline-block; margin: 2px 4px 2px 0; padding: 1px 8px; border-radius: 10px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary);
+            font-size: 0.7rem;
+        }
+        .rag-chip.entity { border-color: rgba(183, 148, 244, 0.5); }
+        .rag-chip.topic { border-color: rgba(72, 187, 120, 0.45); }
+        .rag-sources { margin-top: 6px; }
+        .rag-sources summary { cursor: pointer; color: var(--text-tertiary); padding: 4px 0; }
+        .rag-sources summary:hover { color: var(--text-primary); }
+        .rag-source {
+            margin: 6px 0; padding: 8px 10px; border-left: 2px solid var(--accent-all);
+            background: var(--bg-secondary); border-radius: 0 8px 8px 0; color: var(--text-secondary);
+        }
+        .rag-source.direct { border-left-color: var(--accent-medical); }
+        .rag-source .src-head { font-size: 0.68rem; color: var(--text-tertiary); margin-bottom: 4px; }
+        .rag-spinner {
+            display: inline-block; width: 10px; height: 10px; border: 2px solid var(--border-color);
+            border-top-color: var(--accent-all); border-radius: 50%; animation: spin 0.7s linear infinite;
+        }
+        .answer-text.error { color: #f56565; }
     </style>
 </head>
 <body>
@@ -320,7 +367,7 @@
                     <span class="status-dot" id="statusDot"></span>
                     <span id="statusText">Ready</span>
                 </div>
-                <div id="apiStatus">Streaming Ready</div>
+                <div id="apiStatus">Graph RAG · live streaming</div>
             </div>
 
             <div id="contextIndicator" class="context-indicator">
@@ -435,6 +482,7 @@
                 </div>`;
 
             await loadSessions();
+            if (currentSystem !== system) return;  // another domain was picked meanwhile
 
             if (!sessionsCache[currentSystem] || sessionsCache[currentSystem].length === 0) {
                 await createNewChat();
@@ -450,10 +498,12 @@
         async function loadSessions() {
             if (!currentSystem) return;
             
+            const system = currentSystem;
             try {
-                const res = await fetch(`${API_BASE}/api/sessions/${currentSystem}`);
+                const res = await fetch(`${API_BASE}/api/sessions/${system}`);
                 const data = await res.json();
-                sessionsCache[currentSystem] = data.sessions || [];
+                sessionsCache[system] = data.sessions || [];
+                if (system !== currentSystem) return;  // stale response for a domain no longer shown
 
                 const list = document.getElementById('sessionsList');
                 if (!sessionsCache[currentSystem].length) {
@@ -485,12 +535,14 @@
                 return; 
             }
             
+            const system = currentSystem;
             try {
-                const res = await fetch(`${API_BASE}/api/sessions/${currentSystem}`, { 
+                const res = await fetch(`${API_BASE}/api/sessions/${system}`, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' } 
                 });
                 const data = await res.json();
+                if (system !== currentSystem) return;  // another domain was picked meanwhile
                 currentSessionId = data.session_id;
                 
                 document.getElementById('chatArea').innerHTML = `
@@ -510,9 +562,11 @@
         async function loadSession(sessionId) {
             if (!currentSystem) return;
             
+            const system = currentSystem;
             try {
-                const res = await fetch(`${API_BASE}/api/sessions/${currentSystem}/${sessionId}`);
+                const res = await fetch(`${API_BASE}/api/sessions/${system}/${sessionId}`);
                 const data = await res.json();
+                if (system !== currentSystem) return;  // another domain was picked meanwhile
                 currentSessionId = sessionId;
 
                 const area = document.getElementById('chatArea');
@@ -579,6 +633,98 @@
             return div;
         }
 
+        // Typewriter: reveals streamed text smoothly, speeding up when it falls behind
+        function createTypewriter(el, area) {
+            let target = '', shown = 0, timer = null, onDrained = null;
+            function tick() {
+                const backlog = target.length - shown;
+                if (backlog <= 0) {
+                    timer = null;
+                    if (onDrained) { const cb = onDrained; onDrained = null; cb(); }
+                    return;
+                }
+                shown += Math.max(2, Math.ceil(backlog / 60));
+                el.innerHTML = formatText(target.slice(0, shown));
+                area.scrollTop = area.scrollHeight;
+                timer = setTimeout(tick, 20);
+            }
+            return {
+                push(text) { target += text; if (!timer) tick(); },
+                whenDone() {
+                    return new Promise(resolve => {
+                        if (!timer && shown >= target.length) resolve(); else onDrained = resolve;
+                    });
+                },
+                get text() { return target; }
+            };
+        }
+
+        // RAG trace: shows how the answer was found (graph entities, passages, topics, memory)
+        function chips(items, cls) {
+            return items.map(t => `<span class="rag-chip ${cls}">${escapeHtml(t)}</span>`).join('');
+        }
+
+        function ragStep(icon, html, delayIndex) {
+            return `<li class="rag-step" style="animation-delay:${delayIndex * 140}ms">
+                        <span class="icon">${icon}</span><span>${html}</span></li>`;
+        }
+
+        function showSearching(traceDiv) {
+            traceDiv.innerHTML = `<div class="rag-head"><span class="rag-spinner"></span>
+                Searching the knowledge graph...</div>`;
+        }
+
+        function renderTrace(traceDiv, rag) {
+            if (rag.mode === 'memory') {
+                traceDiv.innerHTML = `<div class="rag-head"><span class="rag-pulse done"></span>Long-term memory</div>
+                    <ol class="rag-steps">${ragStep('🧠',
+                        `Memory command: answered from long-term memory, no document search needed
+                         <span class="muted">(${rag.memory_facts} saved fact${rag.memory_facts === 1 ? '' : 's'})</span>`, 0)}</ol>`;
+                return;
+            }
+            const sources = [...new Set(rag.passages.map(p => p.source))];
+            const viaGraph = rag.passages.filter(p => p.via === 'graph').length;
+            const steps = [
+                ragStep('🔎', `Understood your question as a 384-dimensional semantic vector
+                               <span class="muted">(MiniLM embedding)</span>`, 0),
+                ragStep('🕸️', rag.entities.length
+                    ? `Matched <b>${rag.entities.length}</b> entities in a knowledge graph of
+                       ${rag.graph_size.entities} entities: ${chips(rag.entities.map(e => e.name), 'entity')}`
+                    : `No specific entity matched in the ${rag.graph_size.entities}-entity graph, so semantic search was used`, 1),
+                ragStep('📄', `Retrieved <b>${rag.passages.length}</b> passages from
+                               ${chips(sources, '')}<span class="muted">${viaGraph} via graph links,
+                               ${rag.passages.length - viaGraph} by semantic similarity</span>`, 2),
+            ];
+            if (rag.topics.length) {
+                steps.push(ragStep('🧭', `Related topics from community detection: ${chips(rag.topics.slice(0, 6), 'topic')}`, 3));
+            }
+            steps.push(ragStep('🧠', `Memory: <b>${rag.memory_facts}</b> long-term fact${rag.memory_facts === 1 ? '' : 's'},
+                                      <b>${rag.history_messages}</b> recent message${rag.history_messages === 1 ? '' : 's'}`, steps.length));
+            steps.push(`<li class="rag-step generating" style="animation-delay:${steps.length * 140}ms">
+                            <span class="icon">✍️</span><span>Writing the answer from these passages...</span></li>`);
+
+            const sourceItems = rag.passages.map((p, i) => `
+                <div class="rag-source ${p.via}">
+                    <div class="src-head">#${i + 1} · ${escapeHtml(p.source)} ·
+                        ${p.via === 'graph' ? `graph link via “${escapeHtml(p.entity)}”` : `semantic match ${Math.round(p.score * 100)}%`}</div>
+                    ${escapeHtml(p.preview)}…
+                </div>`).join('');
+
+            traceDiv.innerHTML = `
+                <div class="rag-head"><span class="rag-pulse"></span>RAG pipeline · ${escapeHtml(rag.domain)}
+                    <span class="rag-meta">retrieval ${rag.retrieval_ms} ms</span></div>
+                <ol class="rag-steps">${steps.join('')}</ol>
+                <details class="rag-sources"><summary>View ${rag.passages.length} source passages</summary>${sourceItems}</details>`;
+        }
+
+        function finishTrace(traceDiv) {
+            traceDiv.querySelector('.rag-pulse')?.classList.add('done');
+            const gen = traceDiv.querySelector('.rag-step.generating span:last-child');
+            if (gen) gen.textContent = 'Answer streamed from the retrieved passages';
+            const icon = traceDiv.querySelector('.rag-step.generating .icon');
+            if (icon) icon.textContent = '✅';
+        }
+
         // Streaming Question
         async function sendQuestion() {
             if (isProcessing || !currentSystem) {
@@ -595,17 +741,24 @@
             isProcessing = true;
             document.getElementById('sendBtn').disabled = true;
 
-            // Create assistant message for streaming
+            // Assistant message: RAG trace on top, streamed answer below
             const area = document.getElementById('chatArea');
             const msgDiv = document.createElement('div');
             msgDiv.className = 'message assistant';
+            const bubble = document.createElement('div');
+            bubble.className = 'message-content has-trace';
+            const traceDiv = document.createElement('div');
+            traceDiv.className = 'rag-trace';
+            showSearching(traceDiv);
             const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content streaming-cursor';
-            msgDiv.appendChild(contentDiv);
+            contentDiv.className = 'answer-text streaming-cursor';
+            bubble.appendChild(traceDiv);
+            bubble.appendChild(contentDiv);
+            msgDiv.appendChild(bubble);
             area.appendChild(msgDiv);
             area.scrollTop = area.scrollHeight;
 
-            let rawBuffer = '';
+            const typer = createTypewriter(contentDiv, area);
 
             try {
                 const res = await fetch(`${API_BASE}/api/ask/stream`, {
@@ -647,13 +800,26 @@
                             const parsed = JSON.parse(jsonStr);
 
                             if (parsed.error) {
+                                traceDiv.remove();
                                 contentDiv.classList.remove('streaming-cursor');
                                 contentDiv.innerHTML = `<span style="color:#f56565">Error: ${escapeHtml(parsed.error)}</span>`;
                                 break;
                             }
 
+                            if (parsed.stage === 'retrieving') showSearching(traceDiv);
+
+                            if (parsed.rag) {
+                                renderTrace(traceDiv, parsed.rag);
+                                area.scrollTop = area.scrollHeight;
+                            }
+
+                            if (parsed.token) typer.push(parsed.token);
+
                             if (parsed.done) {
+                                await typer.whenDone();   // let the typewriter finish before closing
                                 contentDiv.classList.remove('streaming-cursor');
+                                if (typer.text.trim().startsWith('Error:')) contentDiv.classList.add('error');
+                                finishTrace(traceDiv);
                                 if (parsed.session_id) currentSessionId = parsed.session_id;
                                 if (parsed.memory_changed) {
                                     await loadMemory();
@@ -663,18 +829,19 @@
                                 document.getElementById('contextIndicator').style.display = 'flex';
                                 break;
                             }
-
-                            if (parsed.token) {
-                                rawBuffer += parsed.token;
-                                contentDiv.innerHTML = formatText(rawBuffer);
-                                area.scrollTop = area.scrollHeight;
-                            }
                         } catch (e) {
                             console.warn('Parse error:', e);
                         }
                     }
                 }
+                // Stream closed without a "done" event (e.g. connection dropped): still finish cleanly
+                if (contentDiv.classList.contains('streaming-cursor')) {
+                    await typer.whenDone();
+                    contentDiv.classList.remove('streaming-cursor');
+                    finishTrace(traceDiv);
+                }
             } catch (err) {
+                traceDiv.remove();
                 contentDiv.classList.remove('streaming-cursor');
                 const reason = err.fromServer ? escapeHtml(err.message) : 'Unable to connect to server. Please try again.';
                 contentDiv.innerHTML = `<span style="color:#f56565">Error: ${reason}</span>`;
@@ -714,12 +881,12 @@
                     text.textContent = `Loading knowledge base: ${sys.message}`;
                 } else if (!data.llm_available) {
                     dot.style.background = '#ed8936';
-                    text.textContent = `Online (LLM '${data.llm_model}' not reachable)`;
+                    text.textContent = 'Online (answer engine unavailable right now)';
                 } else {
                     dot.style.background = '#48bb78';
                     text.textContent = 'Online';
                 }
-                document.getElementById('apiStatus').textContent = `LLM: ${data.llm_model}`;
+                document.getElementById('apiStatus').textContent = `⚡ ${data.llm_model} · live streaming`;
             } catch {
                 // Free Render instances sleep after 15 idle minutes; the first request wakes them up
                 dot.style.background = '#ed8936';
@@ -760,7 +927,7 @@
         }
 
         // Initialize
-        setTimeout(() => selectSystem('legal'), 500);
+        setTimeout(() => { if (!currentSystem) selectSystem('legal'); }, 500);  // unless the user already picked one
         checkHealth();
         loadMemory();
     </script>
